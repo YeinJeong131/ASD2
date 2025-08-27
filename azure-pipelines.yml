@@ -1,19 +1,44 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# Azure Pipelines configuration for Java (Gradle) project
+# Supports Windows agent, JDK 21, build & test, PR validation
 
 trigger:
-- main
+  branches:
+    include:
+      - main
+      - build-pipeline
+      - code-workflow
+
+pr:
+  branches:
+    include:
+      - main
+      - code-workflow
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'windows-latest'
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+  # JDK 21
+  - powershell: |
+      Write-Host "Using JDK 21"
+      Write-Host "##vso[task.setvariable variable=JAVA_HOME]$env:JAVA_HOME_21_X64"
+      $env:JAVA_HOME = $env:JAVA_HOME_21_X64
+      $env:Path = "$env:JAVA_HOME\bin;" + $env:Path
+      java -version
+    displayName: 'Select JDK 21 (preinstalled)'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  # Gradle build
+  - script: gradlew.bat clean build --no-daemon
+    displayName: 'Gradle clean build'
+
+  # Gradle test
+  - script: gradlew.bat test --no-daemon
+    displayName: 'Run unit tests'
+
+  # upload build artifact
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: 'build/libs'
+      artifactName: 'drop'
+      publishLocation: 'Container'
+    displayName: 'Publish build artifacts'
