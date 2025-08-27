@@ -27,15 +27,6 @@ steps:
       java -version
     displayName: 'Select JDK 21 (preinstalled)'
 
-
-  - task: Cache@2
-    inputs:
-      key: 'gradle | "$(Agent.OS)" | build.gradle'
-      path: '$(Pipeline.Workspace)/.gradle'
-      restoreKeys: |
-        gradle | "$(Agent.OS)"
-    displayName: 'Cache Gradle'
-
   # Gradle build
   - script: gradlew.bat clean build --no-daemon
     displayName: 'Gradle clean build'
