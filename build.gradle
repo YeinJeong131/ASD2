@@ -24,6 +24,18 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // for database
+	runtimeOnly 'com.h2database:h2' // in-memory database (for test)
+
+	// for supporting JSP
+	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+
+	// Jakarta JSTL (Spring Boot 3.x)
+	implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
+	implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
+
+
 }
 
 tasks.named('test') {
