@@ -4,9 +4,8 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'org.example'
+group = 'com.wikipedia.appearance'
 version = '0.0.1-SNAPSHOT'
-description = 'ASD'
 
 java {
 	toolchain {
@@ -19,23 +18,38 @@ repositories {
 }
 
 dependencies {
+	// Spring boot starter web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// Test dependencies
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
 	testImplementation 'io.projectreactor:reactor-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// Spring Boot Starter Data JPA
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // for database
-	runtimeOnly 'com.h2database:h2' // in-memory database (for test)
 
-	// for supporting JSP
-	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+	// H2 Database (for development)
+	runtimeOnly 'com.h2database:h2'
+
+	// MySQL Connector (if using MySQL)
+	runtimeOnly 'mysql-connector-java'
 
 	// Jakarta JSTL (Spring Boot 3.x)
 	implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
 	implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
 
+	// devtools (after modifying, it automatically restart spring boot)
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
+	// Spring Boot Starter Validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// Thymeleaf (for frontend)
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 }
 
 tasks.named('test') {
