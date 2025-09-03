@@ -6,8 +6,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import betterpedia.appearance.entity.UserSettings;
 import betterpedia.appearance.service.UserSettingService;
-
-@Controller
+// for API
+@RestController
 @RequestMapping("/api/settings")
 public class UserSettingController {
 
@@ -41,8 +41,4 @@ public class UserSettingController {
         }
     }
 
-    @GetMapping("/page")
-    public String settingsPage() {
-        return "settings"; // returns settings.html template
-    }
 }

@@ -94,8 +94,8 @@ public class UserSettingService {
         if (settings.getLineSpacing() != null && !VALID_LINE_SPACINGS.contains(settings.getLineSpacing())) {
             throw new IllegalArgumentException("line spacing must be one of " + VALID_LINE_SPACINGS + "\n" + "Invalid line spacing: " + settings.getLineSpacing());
         }
-        if (settings.getTimeOffset() != null && !VALID_PAGE_WIDTHS.contains(settings.getTimeOffset())) {
-            throw new IllegalArgumentException("Page width must be one of " + VALID_PAGE_WIDTHS + "\n" + "Invalid time offset: " + settings.getTimeOffset());
+        if (settings.getTimeOffset() != null &&  (settings.getTimeOffset() < -12 || settings.getTimeOffset() > 14)) {
+            throw new IllegalArgumentException("Time offset (hours) must be between -12 and +14. Invalid: " + settings.getTimeOffset());
         }
     }
 }

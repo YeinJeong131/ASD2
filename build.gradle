@@ -21,8 +21,6 @@ dependencies {
 	// Spring boot starter web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
 	// Test dependencies
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
@@ -37,10 +35,6 @@ dependencies {
 
 	// MySQL Connector (if using MySQL)
 	//runtimeOnly 'mysql-connector-java'
-
-	// Jakarta JSTL (Spring Boot 3.x)
-	implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
-	implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
 
 	// devtools (after modifying, it automatically restart spring boot)
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'

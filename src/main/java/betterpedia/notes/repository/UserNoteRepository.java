@@ -7,4 +7,5 @@ import java.util.List;
 public interface UserNoteRepository extends JpaRepository<UserNote, Long> {
     List<UserNote> findByUserIdOrderByCreatedAtDesc(Long userId);
     List<UserNote> findByUserIdAndPageUrlOrderByCreatedAtAsc(Long userId, String pageUrl);
+    List<UserNote> findByUserId(Long userId);
 }
