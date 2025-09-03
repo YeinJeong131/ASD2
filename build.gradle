@@ -36,7 +36,7 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 
 	// MySQL Connector (if using MySQL)
-	runtimeOnly 'mysql-connector-java'
+	//runtimeOnly 'mysql-connector-java'
 
 	// Jakarta JSTL (Spring Boot 3.x)
 	implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'

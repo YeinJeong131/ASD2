@@ -1,13 +1,13 @@
-package wikipedia;
+package betterpedia;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class WikipediaApplication {
+public class BetterpediaApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(WikipediaApplication.class, args);  // ← 이 부분!
+        SpringApplication.run(BetterpediaApplication.class, args);
     }
 
 }

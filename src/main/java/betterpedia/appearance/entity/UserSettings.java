@@ -1,4 +1,4 @@
-package wikipedia.appearance.entity;
+package betterpedia.appearance.entity;
 
 import jakarta.persistence.*;
 
@@ -51,7 +51,7 @@ public class UserSettings {
         return userId;
     }
 
-    public boolean isDarkMode() {
+    public Boolean getDarkMode() {
         return darkMode;
     }
 
