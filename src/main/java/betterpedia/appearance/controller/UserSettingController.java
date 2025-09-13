@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import betterpedia.appearance.entity.UserSettings;
 import betterpedia.appearance.service.UserSettingService;
 // for API
-@RestController
+@RestController // returns JSON data
 @RequestMapping("/api/settings")
 public class UserSettingController {
 
@@ -21,7 +21,7 @@ public class UserSettingController {
             if (userId <= 0) {
                 return ResponseEntity.badRequest().body("Invalid user ID: userId must be greater than 0");
             }
-            UserSettings settings = service.getUserSettings(userId);
+            UserSettings settings = service.getUserSettings(userId); // help us get a user's settings
             return ResponseEntity.ok(settings);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Failed to get user settings: " + e.getMessage());
@@ -40,5 +40,4 @@ public class UserSettingController {
             return ResponseEntity.internalServerError().body("Failed to save user settings: " + e.getMessage());
         }
     }
-
 }
