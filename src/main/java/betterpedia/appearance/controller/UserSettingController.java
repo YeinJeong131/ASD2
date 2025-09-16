@@ -1,11 +1,15 @@
 package betterpedia.appearance.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import betterpedia.appearance.entity.UserSettings;
 import betterpedia.appearance.service.UserSettingService;
+
+import java.util.Map;
+
 // for API
 @RestController // returns JSON data
 @RequestMapping("/api/settings")
@@ -39,5 +43,22 @@ public class UserSettingController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Failed to save user settings: " + e.getMessage());
         }
+    }
+
+    // bring logged in user info
+    @GetMapping("/api/current-user")
+    public ResponseEntity<?> getCurrentUser(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        String username = (String) session.getAttribute("username");
+
+        if (userId == null) {
+            return ResponseEntity.status(401).body("Not logged in");
+        }
+
+        Map<String, Object> user = Map.of(
+                "id", userId,
+                "username", username
+        );
+        return ResponseEntity.ok(user);
     }
 }

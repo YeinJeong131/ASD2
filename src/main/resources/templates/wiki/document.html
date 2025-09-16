@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'BetterPedia - ' + ${document.title}">BetterPedia</title>
+
+    <!-- Your highlight system CSS -->
+    <link rel="stylesheet" th:href="@{/css/yein-highlight-system.css}">
+
+    <!-- Default wiki style -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .wiki-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .wiki-sidebar {
+            width: 250px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .wiki-content {
+            flex: 1;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .wiki-content h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .wiki-content h2 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .wiki-content h3 {
+            color: #5d6d7e;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        .wiki-content p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .wiki-info {
+            background: #e8f4f8;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .highlight-status {
+            position: sticky;
+            top: 20px;
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #c8e6c9;
+        }
+
+        .highlight-controls {
+            margin-top: 15px;
+        }
+
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn.danger {
+            background: #e74c3c;
+        }
+
+        .btn.danger:hover {
+            background: #c0392b;
+        }
+
+        .breadcrumb {
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .breadcrumb a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+    <a th:href="@{/}">Home</a> > <a th:href="@{/wiki}">Wiki</a> >
+    <span th:text="${document.category}">Category</span> >
+    <span th:text="${document.title}">Title</span>
+</div>
+
+<div class="wiki-container">
+    <!-- Sidebar -->
+    <div class="wiki-sidebar">
+        <div class="highlight-status">
+            <h4>🎨 Highlight Status</h4>
+            <p><strong>Total highlights:</strong> <span id="totalHighlights">0</span></p>
+            <p><strong>Saved notes:</strong> <span id="savedNotes">0</span></p>
+            <p><strong>Unsaved:</strong> <span id="unsavedHighlights">0</span></p>
+
+            <div class="highlight-controls">
+                <button class="btn" onclick="showMyNotes()">📋 View My Notes</button>
+                <button class="btn danger" onclick="clearAllHighlights()">🧹 Clear All</button>
+            </div>
+        </div>
+
+        <div class="wiki-info">
+            <h4>How to Use</h4>
+            <ul style="font-size: 12px; padding-left: 15px;">
+                <li>Select text by dragging with your mouse</li>
+                <li>Create highlights using the popup button</li>
+                <li>Click an existing highlight to edit</li>
+                <li>Use 📋 button to add notes</li>
+            </ul>
+        </div>
+
+        <!-- Other teammates' features -->
+        <div class="wiki-info">
+            <h4>Other Features</h4>
+            <p><a th:href="@{/wiki/search}">🔍 Search (Nima)</a></p>
+            <p><a th:href="@{/user/profile}">👤 User Management (Esha)</a></p>
+            <p><a th:href="@{/wiki/discussion}">💬 Discussion (Yu-Han)</a></p>
+            <p><a th:href="@{/wiki/related}">🔗 Related Documents (Suin)</a></p>
+        </div>
+    </div>
+
+    <!-- Main content area (highlight target) -->
+    <div class="wiki-content">
+        <h1 th:text="${document.title} ?: 'Spring Framework'">Spring Framework</h1>
+
+        <!-- Actual wiki content -->
+        <div th:if="${document.content}" th:utext="${document.content}">
+            <!-- HTML content from server -->
+        </div>
+
+        <!-- Default content for testing (when content is null) -->
+        <div th:unless="${document.content}">
+            <h2>Overview</h2>
+            <p>
+                Spring Framework is an open-source application framework for the Java platform,
+                simply called Spring. It provides various services for developing dynamic websites
+                and is also used as the base technology of the e-Government Standard Framework
+                recommended in Korea for public sector web services.
+            </p>
+
+            <h2>Core Features</h2>
+            <h3>Inversion of Control (IoC)</h3>
+            <p>
+                Inversion of Control (IoC) is one of the core concepts of Spring.
+                In traditional programming, objects create and manage their dependencies.
+                In IoC, dependencies are injected externally, reducing coupling between objects
+                and improving testability and flexibility.
+            </p>
+
+            <h3>Dependency Injection (DI)</h3>
+            <p>
+                Dependency Injection (DI) is the concrete way of implementing IoC.
+                The Spring container creates objects and automatically injects the required dependencies.
+                This can be done via constructor injection, setter injection, or field injection,
+                with constructor injection being the most recommended.
+            </p>
+
+            <h3>Aspect-Oriented Programming (AOP)</h3>
+            <p>
+                Aspect-Oriented Programming (AOP) is a paradigm that modularizes cross-cutting concerns.
+                It allows separation of concerns like logging, transaction management, and security
+                from the core business logic, enabling better modularity.
+            </p>
+
+            <h2>Spring Boot</h2>
+            <p>
+                Spring Boot is a tool that helps you create Spring-based projects quickly and easily.
+                It allows you to build standalone applications without complex configuration,
+                and includes an embedded server so you don’t need to install a separate web server.
+            </p>
+
+            <h3>Main Features</h3>
+            <p>
+                Key features of Spring Boot include auto-configuration, starter dependencies,
+                embedded server, and production-ready features.
+                These allow developers to focus more on business logic and are well-suited
+                for implementing microservice architectures.
+            </p>
+
+            <h2>Spring MVC</h2>
+            <p>
+                Spring MVC is a web Model-View-Controller framework provided by Spring.
+                It is centered around the DispatcherServlet, which coordinates controllers,
+                view resolvers, and handler mappings to handle web requests and responses.
+            </p>
+
+            <h2>Spring Data JPA</h2>
+            <p>
+                Spring Data JPA is a Spring subproject that makes it easier to use
+                the Java Persistence API (JPA). It provides Repository interfaces
+                that implement basic CRUD operations automatically, and allows
+                query generation from method names, simplifying data access layer development.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Your highlight system JavaScript -->
+<script th:src="@{/js/yein-highlight-system.js}"></script>
+
+<!-- Additional page scripts -->
+<script th:inline="javascript">
+    // Set current user ID (from server)
+    window.currentUserId = /*[[${session.userId}]]*/ 1;
+
+    // Update highlight status
+    function updateHighlightStatus() {
+        if (window.YeinHighlightSystem && window.YeinHighlightSystem.getInstance()) {
+            const stats = window.YeinHighlightSystem.getStats();
+
+            document.getElementById('totalHighlights').textContent = stats.total || 0;
+            document.getElementById('savedNotes').textContent = stats.withNotes || 0;
+            document.getElementById('unsavedHighlights').textContent = stats.unsaved || 0;
+        }
+    }
+
+    // Navigate to my notes page
+    function showMyNotes() {
+        window.location.href = /*[[@{/notes/my-notes}]]*/ '/notes/my-notes';
+    }
+
+    // Clear all highlights
+    function clearAllHighlights() {
+        if (window.YeinHighlightSystem && window.YeinHighlightSystem.getInstance()) {
+            window.YeinHighlightSystem.clearAll();
+            updateHighlightStatus();
+        }
+    }
+
+    // Update status on page load
+    setTimeout(updateHighlightStatus, 1000);
+    setInterval(updateHighlightStatus, 5000);
+</script>
+</body>
+</html>

@@ -1,6 +1,14 @@
 // Settings page JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     const USER_ID = 1; // Default user ID for testing
+    // 나중에 세션 방식으로 변경
+    // const USER_ID = await getCurrentUserId();
+    // bring user id
+    async function getCurrentUserId() {
+        const response = await fetch('/api/current-user'); // request logged in user info to server
+        const user = await response.json(); // get json response
+        return user.id; // return user id
+    }
 
     // DOM elements
     const form = document.getElementById('settingsForm');

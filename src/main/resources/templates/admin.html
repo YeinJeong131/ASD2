@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin • User Management</title>
+  <style>
+    body {font-family: ui-sans-serif, system-ui, Arial; margin:0; background:#f6f8fb; color:#0f172a;}
+    header {padding:16px 20px; background:#fff; border-bottom:1px solid #e5e7eb;}
+    .wrap {max-width:1100px; margin:24px auto; padding:0 16px;}
+    .grid {display:grid; grid-template-columns: 1fr; gap:16px;}
+    .card {background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:16px; box-shadow:0 1px 2px rgba(0,0,0,.04);}
+    .row {display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+    input, select {padding:10px; border:1px solid #e5e7eb; border-radius:10px;}
+    button {padding:10px 12px; border-radius:10px; border:0; background:#111827; color:#fff; cursor:pointer;}
+    button.ghost {background:#fff; color:#111827; border:1px solid #e5e7eb;}
+    table {width:100%; border-collapse:collapse; margin-top:8px;}
+    th, td {text-align:left; padding:10px; border-bottom:1px solid #e5e7eb; font-size:14px;}
+    .badge {display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #e5e7eb; font-size:12px;}
+    nav a {margin-right:12px; text-decoration:none; color:#111827;}
+  </style>
+</head>
+
+
+<body>
+<header>
+  <div class="wrap">
+    <strong>Betterpedia</strong>
+    <nav style="float:right">
+      <a href="/login">Login</a>
+      <a href="/account">Account</a>
+      <a href="/admin">Admin</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between;">
+      <div class="row">
+        <input placeholder="Search users by name or email" style="min-width:260px;" />
+        <select>
+          <option>All roles</option>
+          <option>Viewer</option>
+          <option>User</option>
+          <option>Admin</option>
+        </select>
+        <select>
+          <option>Status: Any</option>
+          <option>Active</option>
+          <option>Suspended</option>
+        </select>
+      </div>
+      <div class="row">
+        <button title="UI only">+ Create User</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 8px 0;">Users</h2>
+    <table>
+      <thead>
+      <tr>
+        <th style="width:28%">Name</th>
+        <th style="width:28%">Email</th>
+        <th style="width:12%">Role</th>
+        <th style="width:12%">Status</th>
+        <th style="width:20%">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+<!--      manual dataaaaa-->
+      <tr>
+        <td>Esha Writer</td>
+        <td>esha.writer@example.com</td>
+        <td>User</td>
+        <td>Active</td>
+        <td class="row">
+          <button class="ghost" title="UI only">Edit</button>
+          <button class="ghost" title="UI only">Reset PW</button>
+          <button class="ghost" title="UI only">Suspend</button>
+        </td>
+      </tr>
+      <tr>
+        <td>Esha Admin</td>
+        <td>esha.admin@example.com</td>
+        <td>Admin</td>
+        <td>Active</td>
+        <td class="row">
+          <button class="ghost" title="UI only">Edit</button>
+          <button class="ghost" title="UI only">Deactivate</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+</main>
+</body>
+</html>

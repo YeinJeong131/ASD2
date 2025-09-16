@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${pageTitle} ?: 'Account Settings'">Account Settings</title>
+
+    <style>
+        body{font-family:ui-sans-serif,system-ui,Arial;margin:0;background:#f6f8fb;color:#0f172a}
+        header{padding:16px 20px;background:#fff;border-bottom:1px solid #e5e7eb}
+        .wrap{max-width:960px;margin:24px auto;padding:0 16px}
+        .grid{display:grid;grid-template-columns:1fr;gap:16px}
+        .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+        h2{margin:0 0 10px 0}
+        label{display:block;font-size:14px;margin-top:12px}
+        input,select{width:100%;padding:10px;margin-top:6px;border:1px solid #e5e7eb;border-radius:10px}
+        .row{display:flex;gap:8px;flex-wrap:wrap}
+        .row > *{flex:1}
+        .actions{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+        button{padding:10px 14px;border:0;border-radius:10px;background:#111827;color:#fff;cursor:pointer}
+        .ghost{background:#fff;color:#111827;border:1px solid #e5e7eb}
+        nav a{margin-right:8px;text-decoration:none;color:#111827}
+    </style>
+
+</head>
+<body>
+<header>
+    <div class="wrap">
+        <strong>Betterpedia</strong>
+        <nav style="float:right">
+            <a th:href="@{/login}">Login</a>
+            <a th:href="@{/account}">Account</a>
+            <a th:href="@{/settings}">Appearance Settings</a>  <!-- yein j - add settings nav page -->
+            <a th:href="@{/admin}">Admin</a>
+        </nav>
+    </div>
+</header>
+
+<main class="wrap">
+    <div class="grid">
+<!--        PROFILE-->
+        <section class="card">
+            <h2>Profile</h2>
+            <div class="row">
+                <div>
+                    <label>Full name</label>
+                    <input placeholder="Your name" value="Esha Sadarangani" />
+                </div>
+                <div>
+                    <label>Display name (optional)</label>
+                    <input placeholder="What others see" />
+                </div>
+            </div>
+
+            <label>Email</label>
+            <input placeholder="you@example.com" value="esha@example.com" />
+
+            <div class="actions">
+                <button>Save profile</button>
+                <button class="ghost" title="UI only">Cancel</button>
+            </div>
+
+        </section>
+<!--SECURITY-->
+        <section class="card">
+            <h2>Security</h2>
+            <label>Current password</label>
+            <input type="password" placeholder="••••••••" />
+
+            <div class="row">
+                <div>
+                    <label>New password</label>
+                    <input type="password" placeholder="At least 8 characters" />
+                </div>
+                <div>
+                    <label>Confirm new password</label>
+                    <input type="password" placeholder="Repeat new password" />
+                </div>
+            </div>
+
+            <div class="actions">
+                <button>Change password</button>
+                <button class="ghost" title="UI only">Forgot password?</button>
+            </div>
+        </section>
+
+
+    </div>
+</main>
+</body>
+</html>
