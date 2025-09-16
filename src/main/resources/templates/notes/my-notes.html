@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Notes - BetterPedia</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/my-notes.css}">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- 사이드바 -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <h5 class="sidebar-heading">
+                    <i class="fas fa-sticky-note me-2"></i>My Notes
+                </h5>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#all-notes">
+                            <i class="fas fa-list me-2"></i>
+                            All Notes (<span th:text="${totalNotes}">0</span>)
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#by-page">
+                            <i class="fas fa-folder me-2"></i>
+                            By Page (<span th:text="${notesByPage.size()}">0</span>)
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/wiki">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Back to Wiki
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- 메인 컨텐츠 -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">
+                    <i class="fas fa-sticky-note me-3"></i>My Notes
+                </h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleView()">
+                        <i class="fas fa-th-list me-1"></i>Toggle View
+                    </button>
+                </div>
+            </div>
+
+            <!-- All Notes 섹션 -->
+            <div id="all-notes" class="notes-section">
+                <div th:if="${allNotes.isEmpty()}" class="text-center py-5">
+                    <i class="fas fa-sticky-note fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No notes yet</h4>
+                    <p class="text-muted">Start highlighting text on wiki pages to create your first note!</p>
+                    <a href="/wiki" class="btn btn-primary">
+                        <i class="fas fa-book me-2"></i>Go to Wiki
+                    </a>
+                </div>
+
+                <div th:unless="${allNotes.isEmpty()}" class="row">
+                    <div class="col-12" th:each="note : ${allNotes}">
+                        <div class="note-card card mb-3" th:attr="data-note-id=${note.noteId}">
+                            <div class="card-body">
+                                <!-- 노트 헤더 -->
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="note-meta">
+                                        <h6 class="card-subtitle text-muted mb-1">
+                                            <i class="fas fa-link me-1"></i>
+                                            <a th:href="@{${note.pageUrl}}"
+                                               th:text="${note.pageUrl}"
+                                               class="text-decoration-none page-link">
+                                                Page URL
+                                            </a>
+                                        </h6>
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            <span th:text="${#temporals.format(note.createdDate, 'yyyy-MM-dd HH:mm')}"></span>
+                                        </small>
+                                    </div>
+                                    <div class="note-actions">
+                                            <span class="badge highlight-badge"
+                                                  th:class="'badge highlight-badge ' + ${note.highlightColour}"
+                                                  th:text="${note.highlightColour}">
+                                                yellow
+                                            </span>
+                                    </div>
+                                </div>
+
+                                <!-- 하이라이트된 텍스트 -->
+                                <div class="highlighted-text mb-2" th:attr="data-color=${note.highlightColour}">
+                                    <i class="fas fa-quote-left me-2 text-muted"></i>
+                                    <span th:text="${note.highlightedText}">Highlighted text</span>
+                                    <i class="fas fa-quote-right ms-2 text-muted"></i>
+                                </div>
+
+                                <!-- 노트 내용 -->
+                                <div class="note-content mb-3" th:if="${note.noteContent}">
+                                    <strong>My Note:</strong>
+                                    <p class="mt-1 mb-0" th:text="${note.noteContent}">Note content</p>
+                                </div>
+
+                                <!-- 액션 버튼들 -->
+                                <div class="note-actions-bottom d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-primary"
+                                            th:onclick="'editNote(' + ${note.noteId} + ')'">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger"
+                                            th:onclick="'deleteNote(' + ${note.noteId} + ')'">
+                                        <i class="fas fa-trash me-1"></i>Delete
+                                    </button>
+                                    <a th:href="@{${note.pageUrl}}"
+                                       class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-external-link-alt me-1"></i>Go to Page
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- By Page 섹션 (기본적으로 숨김) -->
+            <div id="by-page" class="notes-section" style="display: none;">
+                <div th:each="pageEntry : ${notesByPage}">
+                    <div class="page-group mb-4">
+                        <h4 class="page-group-title">
+                            <i class="fas fa-file-alt me-2"></i>
+                            <a th:href="@{${pageEntry.key}}"
+                               th:text="${pageEntry.key}"
+                               class="text-decoration-none">
+                                Page URL
+                            </a>
+                            <span class="badge bg-secondary ms-2" th:text="${pageEntry.value.size()}">0</span>
+                        </h4>
+
+                        <div class="row">
+                            <div class="col-12" th:each="note : ${pageEntry.value}">
+                                <!-- 노트 카드 (위와 동일하지만 페이지 정보 제외) -->
+                                <div class="note-card card mb-2" th:attr="data-note-id=${note.noteId}">
+                                    <div class="card-body py-2">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <small class="text-muted">
+                                                <span th:text="${#temporals.format(note.createdDate, 'MM-dd HH:mm')}"></span>
+                                            </small>
+                                            <span class="badge highlight-badge"
+                                                  th:class="'badge highlight-badge ' + ${note.highlightColour}"
+                                                  th:text="${note.highlightColour}">
+                                                </span>
+                                        </div>
+
+                                        <div class="highlighted-text mb-1" th:attr="data-color=${note.highlightColour}">
+                                            <span th:text="${note.highlightedText}">Highlighted text</span>
+                                        </div>
+
+                                        <div class="note-content mb-2" th:if="${note.noteContent}">
+                                            <small><strong>Note:</strong> <span th:text="${note.noteContent}"></span></small>
+                                        </div>
+
+                                        <div class="note-actions-bottom d-flex gap-1">
+                                            <button class="btn btn-xs btn-outline-primary"
+                                                    th:onclick="'editNote(' + ${note.noteId} + ')'">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-xs btn-outline-danger"
+                                                    th:onclick="'deleteNote(' + ${note.noteId} + ')'">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- 편집 모달 -->
+<div class="modal fade" id="editNoteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editNoteForm">
+                    <input type="hidden" id="editNoteId">
+                    <div class="mb-3">
+                        <label for="editNoteContent" class="form-label">Note Content</label>
+                        <textarea class="form-control" id="editNoteContent" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editHighlightColor" class="form-label">Highlight Color</label>
+                        <select class="form-select" id="editHighlightColor">
+                            <option value="yellow">Yellow</option>
+                            <option value="blue">Blue</option>
+                            <option value="green">Green</option>
+                            <option value="red">Red</option>
+                            <option value="purple">Purple</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveNoteChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JS -->
+<script th:src="@{/js/my-notes.js}"></script>
+</body>
+</html>
