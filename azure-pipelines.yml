@@ -5,20 +5,18 @@ trigger:
   branches:
     include:
       - main
-      - build-pipeline
-      - code-workflow
+      - appearance-note-feature
 
 pr:
   branches:
     include:
       - main
-      - code-workflow
 
 pool:
   vmImage: 'windows-latest'
 
 steps:
-  # JDK 21
+  # Step 1: JDK 21
   - powershell: |
       Write-Host "Using JDK 21"
       Write-Host "##vso[task.setvariable variable=JAVA_HOME]$env:JAVA_HOME_21_X64"
@@ -27,18 +25,30 @@ steps:
       java -version
     displayName: 'Select JDK 21 (preinstalled)'
 
-  # Gradle build
-  - script: gradlew.bat clean build --no-daemon
-    displayName: 'Gradle clean build'
+  # Step 2: Gradle build (without test)
+  - script: gradlew.bat clean build -x test --no-daemon
+    displayName: 'Gradle clean build (without tests)'
 
-  # Gradle test
-  - script: gradlew.bat test --no-daemon
-    displayName: 'Run unit tests'
+  # Step 3: Gradle test and collect results
+  - task: Gradle@2
+    displayName: 'Run unit tests and publish results'
+    inputs:
+      workingDirectory: ''
+      gradleWrapperFile: 'gradlew.bat'
+      tasks: 'test'
+      publishJUnitResults: true
+      testResultsFiles: '**/TEST-*.xml'
+      testRunTitle: 'Unit Tests - Betterpedia'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.21'
 
-  # upload build artifact
+
+
+  # Step 4: upload build artifact
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: 'build/libs'
       artifactName: 'drop'
       publishLocation: 'Container'
     displayName: 'Publish build artifacts'
+    condition: succeededOrFailed()
