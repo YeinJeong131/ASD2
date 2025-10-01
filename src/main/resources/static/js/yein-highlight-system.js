@@ -281,11 +281,11 @@ class YeinHighlightSystem {
             // 서버 저장
             this.saveToServer(highlightData);
 
-            this.showMessage('하이라이트가 생성되었습니다!', 'success');
+            this.showMessage('highlight is generated!', 'success');
 
         } catch (error) {
             console.error('Highlight creation failed:', error);
-            this.showMessage('하이라이트 생성에 실패했습니다.', 'error');
+            this.showMessage('failed to generated highlight.', 'error');
         }
     }
 
@@ -361,11 +361,11 @@ class YeinHighlightSystem {
             // 서버 저장
             this.saveToServer(highlightData);
 
-            this.showMessage('하이라이트와 노트가 생성되었습니다!', 'success');
+            this.showMessage('highlight and note are generated!', 'success');
 
         } catch (error) {
             console.error('Highlight + Note creation failed:', error);
-            this.showMessage('생성에 실패했습니다.', 'error');
+            this.showMessage('failed to generate.', 'error');
         }
     }
 
@@ -403,7 +403,7 @@ class YeinHighlightSystem {
 
             } else {
                 console.error('Save failed:', response.status);
-                this.showMessage('서버 저장에 실패했습니다.', 'error');
+                this.showMessage('failed to store in server.', 'error');
             }
 
         } catch (error) {
@@ -416,7 +416,7 @@ class YeinHighlightSystem {
      * 하이라이트 삭제
      */
     deleteHighlight(highlightId) {
-        if (!confirm('이 하이라이트를 삭제하시겠습니까?')) return;
+        if (!confirm('do u want to delete this highlight?')) return;
 
         const element = document.getElementById(highlightId);
         if (!element) return;
@@ -447,7 +447,7 @@ class YeinHighlightSystem {
 
         } catch (error) {
             console.error('Delete failed:', error);
-            this.showMessage('삭제에 실패했습니다.', 'error');
+            this.showMessage('failed to delete.', 'error');
         }
     }
 
@@ -537,7 +537,7 @@ class YeinHighlightSystem {
      * 모든 하이라이트 제거
      */
     clearAllHighlights() {
-        if (!confirm(`모든 하이라이트(${this.highlights.length}개)를 제거하시겠습니까?`)) return;
+        if (!confirm(`Do you want to remove all highlights (${this.highlights.length})?`)) return;
 
         document.querySelectorAll(`.${this.config.cssPrefix}`).forEach(el => {
             const parent = el.parentNode;
@@ -581,7 +581,10 @@ document.addEventListener('DOMContentLoaded', function() {
             apiEndpoint: '/api/notes'
         });
 
-        console.log('Yein의 하이라이트 시스템이 활성화되었습니다!');
+        console.log("Yein's Highlight System has been activated!");
+
+
+
     }
 });
 

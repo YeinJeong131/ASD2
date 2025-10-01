@@ -129,11 +129,46 @@
     </style>
 </head>
 <body>
-<!-- Breadcrumb -->
-<div class="breadcrumb">
-    <a th:href="@{/}">Home</a> > <a th:href="@{/wiki}">Wiki</a> >
-    <span th:text="${document.category}">Category</span> >
-    <span th:text="${document.title}">Title</span>
+<!-- ========== 1. Navigation Bar ========== -->
+<nav style="background: #2c3e50; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; margin: -20px -20px 0 -20px;">
+    <a th:href="@{/wiki}" style="color: white; font-size: 24px; font-weight: bold; text-decoration: none;">
+        📚 Betterpedia
+    </a>
+    <div style="display: flex; gap: 20px;">
+        <a th:href="@{/wiki}"
+           style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px;"
+           onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+           onmouseout="this.style.background='transparent'">
+            🏠 Wiki Home
+        </a>
+        <a th:href="@{/my-notes}"
+           style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px;"
+           onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+           onmouseout="this.style.background='transparent'">
+            📝 My Notes
+        </a>
+        <a th:href="@{/settings}"
+           style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px;"
+           onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+           onmouseout="this.style.background='transparent'">
+            ⚙️ Settings
+        </a>
+        <a th:href="@{/account}"
+           style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px;"
+           onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+           onmouseout="this.style.background='transparent'">
+            👤 Account
+        </a>
+    </div>
+</nav>
+
+<!-- ========== 2. Breadcrumb (현재 위치 표시) ========== -->
+<div class="breadcrumb" style="background: white; padding: 15px 30px; border-bottom: 1px solid #e0e0e0; font-size: 14px; color: #7f8c8d;">
+    <a th:href="@{/wiki}" style="color: #3498db; text-decoration: none;">Wiki</a>
+    <span style="margin: 0 8px;">></span>
+    <span th:text="${document.category}" style="color: #7f8c8d;">Category</span>
+    <span style="margin: 0 8px;">></span>
+    <span th:text="${document.title}" style="color: #2c3e50; font-weight: 500;">Title</span>
 </div>
 
 <div class="wiki-container">
@@ -218,7 +253,7 @@
             <p>
                 Spring Boot is a tool that helps you create Spring-based projects quickly and easily.
                 It allows you to build standalone applications without complex configuration,
-                and includes an embedded server so you don’t need to install a separate web server.
+                and includes an embedded server so you don't need to install a separate web server.
             </p>
 
             <h3>Main Features</h3>
@@ -266,9 +301,9 @@
         }
     }
 
-    // Navigate to my notes page
+    // Navigate to my notes page (수정됨!)
     function showMyNotes() {
-        window.location.href = /*[[@{/notes/my-notes}]]*/ '/notes/my-notes';
+        window.location.href = /*[[@{/my-notes}]]*/ '/my-notes';
     }
 
     // Clear all highlights
