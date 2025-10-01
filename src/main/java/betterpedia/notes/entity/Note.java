@@ -3,6 +3,7 @@ package betterpedia.notes.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import betterpedia.user.entity.User;
 
 @Entity
 @Table(name = "notes")
@@ -11,8 +12,9 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long noteId;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(nullable = false, length = 500)
     private String pageUrl;
@@ -43,9 +45,9 @@ public class Note {
         this.highlightColour = "yellow";
     }
 
-    public Note(Long userId, String pageUrl, String highlightedText, String noteContent, String position) {
+    public Note(User user, String pageUrl, String highlightedText, String noteContent, String position) {
         this();
-        this.userId = userId;
+        this.user = user;
         this.pageUrl = pageUrl;
         this.highlightedText = highlightedText;
         this.noteContent = noteContent;
@@ -59,8 +61,8 @@ public class Note {
         return noteId;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
     public String getPageUrl() {
@@ -95,8 +97,9 @@ public class Note {
         this.noteId = noteId;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public void setPageUrl(String pageUrl) {
@@ -137,7 +140,7 @@ public class Note {
     public String toString() {
         return "Note{" +
                 "noteId=" + noteId +
-                ", userId=" + userId +
+                ", user=" + (user != null ? user.getId() : "null") +
                 ", pageUrl='" + pageUrl + '\'' +
                 ", highlightedText='" + highlightedText + '\'' +
                 ", noteContent='" + noteContent + '\'' +

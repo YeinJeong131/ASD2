@@ -1,6 +1,7 @@
 package betterpedia.appearance.entity;
 
 import jakarta.persistence.*;
+import betterpedia.user.entity.User;
 
 
 @Entity
@@ -10,8 +11,9 @@ public class UserSettings {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
 
     @Column(name = "dark_mode")
     private boolean darkMode = false;
@@ -36,10 +38,9 @@ public class UserSettings {
 
     public UserSettings() {}
 
-    public UserSettings(Long userId) {
-        this.userId = userId;
+    public UserSettings(User user) {
+        this.user = user;
     }
-
 
 
     // Getters and Setters
@@ -47,8 +48,8 @@ public class UserSettings {
     public Long getId() {
         return id;
     }
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
     public Boolean getDarkMode() {
@@ -84,8 +85,8 @@ public class UserSettings {
         this.id = id;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public void setDarkMode(boolean darkMode) {

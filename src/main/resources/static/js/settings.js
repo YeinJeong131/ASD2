@@ -1,13 +1,26 @@
 // Settings page JavaScript
-document.addEventListener('DOMContentLoaded', function() {
-    const USER_ID = 1; // Default user ID for testing
+document.addEventListener('DOMContentLoaded', async function() {
+    // const USER_ID = 1; // Default user ID for testing
     // 나중에 세션 방식으로 변경
     // const USER_ID = await getCurrentUserId();
     // bring user id
-    async function getCurrentUserId() {
-        const response = await fetch('/api/current-user'); // request logged in user info to server
-        const user = await response.json(); // get json response
-        return user.id; // return user id
+    let USER_ID;
+
+    try {
+        const userResponse = await fetch('/api/settings/current-user');
+        if (userResponse.ok) {
+            const userData = await userResponse.json();
+            USER_ID = userData.id;
+            console.log('Logged in as user:', USER_ID);
+        } else {
+            console.error('Not logged in, redirecting...');
+            window.location.href = '/login';
+            return;
+        }
+    } catch (error) {
+        console.error('Failed to get current user:', error);
+        window.location.href = '/login';
+        return;
     }
 
     // DOM elements
@@ -48,19 +61,34 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             showStatus('Loading settings...', 'info');
 
-            const response = await fetch(`/api/settings/${USER_ID}`);
+            // ✅ 수정: USER_ID 제거
+            const response = await fetch('/api/settings');
+
+            if (response.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error('Failed to load settings');
+            }
+
             const settings = await response.json();
 
-            // Apply settings to form
-            darkModeToggle.checked = settings.darkMode;
-            fontSizeSelect.value = settings.fontSize;
-            fontStyleSelect.value = settings.fontStyle;
-            lineSpacingSelect.value = settings.lineSpacing;
-            dateFormatSelect.value = settings.dateFormat;
-            timeOffsetSelect.value = settings.timeOffset;
+            // Apply settings to form (기본값 적용)
+            darkModeToggle.checked = settings.darkMode || false;
+            fontSizeSelect.value = settings.fontSize || 'medium';
+            fontStyleSelect.value = settings.fontStyle || 'arial';
+            lineSpacingSelect.value = settings.lineSpacing || 'normal';
+            dateFormatSelect.value = settings.dateFormat || 'DD/MM/YYYY';
+            timeOffsetSelect.value = settings.timeOffset || 9;
 
             // Set page width radio
-            document.querySelector(`input[name="pageWidth"][value="${settings.pageWidth}"]`).checked = true;
+            const pageWidth = settings.pageWidth || 'fixed';
+            const pageWidthRadio = document.querySelector(`input[name="pageWidth"][value="${pageWidth}"]`);
+            if (pageWidthRadio) {
+                pageWidthRadio.checked = true;
+            }
 
             // Apply all settings immediately
             applyAllSettings();
@@ -68,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } catch (error) {
             console.error('Failed to load settings:', error);
-            showStatus('Failed to load settings', 'error');
+            showStatus('Failed to load settings: ' + error.message, 'error');
         }
     }
 
@@ -173,7 +201,6 @@ document.addEventListener('DOMContentLoaded', function() {
             showStatus('Saving settings...', 'info');
 
             const settings = {
-                userId: USER_ID,
                 darkMode: darkModeToggle.checked,
                 fontSize: fontSizeSelect.value,
                 fontStyle: fontStyleSelect.value,
@@ -190,6 +217,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify(settings)
             });
+
+            if (response.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
 
             if (response.ok) {
                 const savedSettings = await response.json();

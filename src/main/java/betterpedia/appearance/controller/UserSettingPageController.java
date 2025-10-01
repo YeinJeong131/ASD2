@@ -22,17 +22,9 @@ public class UserSettingPageController {
         // check - logged in
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
-            return "redirect:/test-login";
+            return "redirect:/login";
         }
             // templates/settings_page.html
             return "settings_page";
-    }
-
-    // mock login for test
-    @GetMapping("/test-login")
-    public String testLogin(HttpSession session) {
-        session.setAttribute("userId", 1L);
-        session.setAttribute("username", "TestUser");
-        return "redirect:/settings";
     }
 }

@@ -3,87 +3,94 @@
 <head>
     <meta charset="UTF-8" />
     <title th:text="${pageTitle} ?: 'Account Settings'">Account Settings</title>
-
     <style>
         body{font-family:ui-sans-serif,system-ui,Arial;margin:0;background:#f6f8fb;color:#0f172a}
         header{padding:16px 20px;background:#fff;border-bottom:1px solid #e5e7eb}
         .wrap{max-width:960px;margin:24px auto;padding:0 16px}
         .grid{display:grid;grid-template-columns:1fr;gap:16px}
         .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-        h2{margin:0 0 10px 0}
+        h1,h2{margin:0 0 10px 0}
         label{display:block;font-size:14px;margin-top:12px}
-        input,select{width:100%;padding:10px;margin-top:6px;border:1px solid #e5e7eb;border-radius:10px}
+        input{width:100%;padding:10px;margin-top:6px;border:1px solid #e5e7eb;border-radius:10px}
         .row{display:flex;gap:8px;flex-wrap:wrap}
         .row > *{flex:1}
         .actions{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
         button{padding:10px 14px;border:0;border-radius:10px;background:#111827;color:#fff;cursor:pointer}
         .ghost{background:#fff;color:#111827;border:1px solid #e5e7eb}
-        nav a{margin-right:8px;text-decoration:none;color:#111827}
+        nav a{margin-left:12px;text-decoration:none;color:#111827}
+        .msg{color:#065f46;margin:10px 0}
+        .danger{border-color:#fecaca}
+        .danger h2{color:#991b1b}
+        .danger button{background:#991b1b}
+        .hint{font-size:12px;color:#64748b;margin-top:6px}
     </style>
-
 </head>
 <body>
 <header>
     <div class="wrap">
         <strong>Betterpedia</strong>
         <nav style="float:right">
-            <a th:href="@{/login}">Login</a>
-            <a th:href="@{/account}">Account</a>
-            <a th:href="@{/settings}">Appearance Settings</a>  <!-- yein j - add settings nav page -->
-            <a th:href="@{/admin}">Admin</a>
+            <a th:href="@{/settings}">Appearance Settings</a>  <!-- ✅ 추가 -->
+            <a th:href="@{/my-notes}">My Notes</a>              <!-- ✅ 추가 -->
+            <a th:href="@{/logout}">Sign out</a>
         </nav>
     </div>
 </header>
 
 <main class="wrap">
+    <h1>Account Settings</h1>
+    <p th:if="${msg}" class="msg" th:text="${msg}"></p>
+
     <div class="grid">
-<!--        PROFILE-->
+        <!-- Profile -->
         <section class="card">
             <h2>Profile</h2>
-            <div class="row">
-                <div>
-                    <label>Full name</label>
-                    <input placeholder="Your name" value="Esha Sadarangani" />
+            <form th:action="@{/account/profile}" method="post">
+                <input type="hidden" name="uid" th:value="${user.id}" />
+                <label>Email</label>
+                <input name="email" type="email" th:value="${user.email}" required />
+                <div class="actions">
+                    <button type="submit">Save profile</button>
+                    <a th:href="@{/account}" class="ghost" style="text-decoration:none;display:inline-block;padding:10px 14px;border-radius:10px;">Cancel</a>
                 </div>
-                <div>
-                    <label>Display name (optional)</label>
-                    <input placeholder="What others see" />
-                </div>
-            </div>
-
-            <label>Email</label>
-            <input placeholder="you@example.com" value="esha@example.com" />
-
-            <div class="actions">
-                <button>Save profile</button>
-                <button class="ghost" title="UI only">Cancel</button>
-            </div>
-
+            </form>
         </section>
-<!--SECURITY-->
+
+        <!-- Security -->
         <section class="card">
             <h2>Security</h2>
-            <label>Current password</label>
-            <input type="password" placeholder="••••••••" />
-
-            <div class="row">
-                <div>
-                    <label>New password</label>
-                    <input type="password" placeholder="At least 8 characters" />
+            <form th:action="@{/account/password}" method="post">
+                <input type="hidden" name="uid" th:value="${user.id}" />
+                <div class="row">
+                    <div>
+                        <label>New password</label>
+                        <input name="newPassword" type="password" placeholder="At least 8 characters" required />
+                    </div>
+                    <div>
+                        <label>Confirm new password</label>
+                        <input name="confirm" type="password" placeholder="Repeat new password" required />
+                    </div>
                 </div>
-                <div>
-                    <label>Confirm new password</label>
-                    <input type="password" placeholder="Repeat new password" />
+                <div class="actions">
+                    <button type="submit">Change password</button>
+                    <span class="hint">For now, no hashing—security comes later.</span>
                 </div>
-            </div>
-
-            <div class="actions">
-                <button>Change password</button>
-                <button class="ghost" title="UI only">Forgot password?</button>
-            </div>
+            </form>
         </section>
 
-
+        <!-- Danger zone -->
+        <section class="card danger">
+            <h2>Delete account</h2>
+            <p class="hint">This permanently removes your account and roles.</p>
+            <form th:action="@{/account/delete}" method="post"
+                  onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
+                <input type="hidden" name="uid" th:value="${user.id}" />
+                <div class="actions">
+                    <button type="submit">Delete my account</button>
+                    <a th:href="@{/account}" class="ghost" style="text-decoration:none;display:inline-block;padding:10px 14px;border-radius:10px;">Cancel</a>
+                </div>
+            </form>
+        </section>
     </div>
 </main>
 </body>

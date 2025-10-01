@@ -4,6 +4,8 @@ import betterpedia.notes.entity.Note;
 import betterpedia.notes.repository.NoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import betterpedia.user.entity.User;
+import betterpedia.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,9 +17,15 @@ public class NoteService {
     @Autowired
     private NoteRepository noteRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public Note saveNote(Long userId, String pageUrl, String highlightedText, String noteContent, String position, String highlightColor) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
         Note note = new Note();
-        note.setUserId(userId);
+        note.setUser(user);
         note.setPageUrl(pageUrl);
         note.setHighlightedText(highlightedText);
         note.setNoteContent(noteContent);
@@ -28,15 +36,24 @@ public class NoteService {
     }
 
     public List<Note> getAllNotesByUser(Long userId) {
-        return noteRepository.findByUserIdOrderByCreatedDateDesc(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        return noteRepository.findByUserOrderByCreatedDateDesc(user);
     }
 
     public List<Note> getNotesByUserAndPage(Long userId, String pageUrl) {
-        return noteRepository.findByUserIdAndPageUrlOrderByCreatedDateDesc(userId, pageUrl);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        return noteRepository.findByUserAndPageUrlOrderByCreatedDateDesc(user, pageUrl);
     }
 
-    public Note updateNote(Long noteId, Long userId, String noteContent, String highlightColor) {
-        Optional<Note> optionalNote = noteRepository.findByNoteIdAndUserId(noteId, userId);
+    public Note updateNote(Long userId, Long noteId, String noteContent, String highlightColor) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        Optional<Note> optionalNote = noteRepository.findByNoteIdAndUser(noteId, user);
 
         if (optionalNote.isPresent()) {
             Note note = optionalNote.get();
@@ -48,13 +65,14 @@ public class NoteService {
             }
             note.setUpdatedDate(LocalDateTime.now());
             return noteRepository.save(note);
-        }
-
-        throw new RuntimeException("Note not found");
+        } throw new RuntimeException("Note not found or access denied");
     }
 
     public boolean deleteNote(Long noteId, Long userId) {
-        Optional<Note> optionalNote = noteRepository.findByNoteIdAndUserId(noteId, userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        Optional<Note> optionalNote = noteRepository.findByNoteIdAndUser(noteId, user);
 
         if (optionalNote.isPresent()) {
             noteRepository.delete(optionalNote.get());

@@ -7,6 +7,9 @@ import betterpedia.appearance.repository.UserSettingsRepository;
 
 import java.util.Arrays;
 import java.util.List;
+import betterpedia.user.entity.User;
+import betterpedia.user.repository.UserRepository;
+
 
 @Service
 public class UserSettingService {
@@ -14,31 +17,41 @@ public class UserSettingService {
     @Autowired
     private UserSettingsRepository repository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     // bring user settings (if there's no setting generate default settings)
     public UserSettings getUserSettings(Long userId) {
-        //check if there is settings
-        return repository.findByUserId(userId).orElse(createDefaultSettings(userId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        return repository.findByUser(user)
+                .orElse(createDefaultSettings(user));
     }
 
     // store user settings
-    public UserSettings saveUserSettings(UserSettings settings) throws IllegalArgumentException{
+    public UserSettings saveUserSettings(Long userId, UserSettings settings) throws IllegalArgumentException{
 
         // before saving user settings, check validation first
         validateSettings(settings);
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
         // if there's original setting, update. if no generate new settings
-        if (repository.existsByUserId(settings.getUserId())) {
-            UserSettings existing = repository.findByUserId(settings.getUserId()).get();
+        if (repository.existsByUser(user)) {
+            UserSettings existing = repository.findByUser(user).get();
             updateExistingSettings(existing, settings);
             return repository.save(existing);
         } else {
+            settings.setUser(user);
             return repository.save(settings);
         }
     }
 
     // generate default settings
-    private UserSettings createDefaultSettings(Long userId) {
-        UserSettings defaultSettings = new UserSettings(userId);
+    private UserSettings createDefaultSettings(User user) {
+        UserSettings defaultSettings = new UserSettings(user);
         return repository.save(defaultSettings);
     }
 
@@ -76,9 +89,6 @@ public class UserSettingService {
     private static final List<String> VALID_LINE_SPACINGS = Arrays.asList("compact", "normal", "relaxed");
 
     private void validateSettings(UserSettings settings) throws IllegalArgumentException {
-        if (settings.getUserId() == null) {
-            throw new IllegalArgumentException("User ID is required");
-        }
         if (settings.getFontSize() != null && !VALID_FONT_SIZES.contains(settings.getFontSize())) {
             throw new IllegalArgumentException("Font size must be one of " + VALID_FONT_SIZES + "\n" + "Invalid font size: " + settings.getFontSize());
         }

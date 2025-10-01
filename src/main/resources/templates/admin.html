@@ -17,9 +17,17 @@
     th, td {text-align:left; padding:10px; border-bottom:1px solid #e5e7eb; font-size:14px;}
     .badge {display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #e5e7eb; font-size:12px;}
     nav a {margin-right:12px; text-decoration:none; color:#111827;}
+    /* 모달 스타일 추가 */
+    .modal {display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;}
+    .modal.active {display:flex; align-items:center; justify-content:center;}
+    .modal-content {background:#fff; border-radius:16px; padding:24px; max-width:500px; width:90%;}
+    .modal-content h3 {margin:0 0 16px 0;}
+    .modal-content label {display:block; margin-top:12px; font-size:14px;}
+    .modal-content input {width:100%; padding:10px; margin-top:6px; border:1px solid #e5e7eb; border-radius:10px;}
+    .modal-actions {display:flex; gap:8px; margin-top:16px;}
+    .msg {color:#065f46; margin:10px 0; padding:10px; background:#ecfdf5; border-radius:8px;}
   </style>
 </head>
-
 
 <body>
 <header>
@@ -34,6 +42,9 @@
 </header>
 
 <main class="wrap">
+
+  <!-- 성공 메시지 표시 -->
+  <p th:if="${msg}" class="msg" th:text="${msg}"></p>
 
   <div class="card">
     <div class="row" style="justify-content:space-between;">
@@ -52,7 +63,8 @@
         </select>
       </div>
       <div class="row">
-        <button title="UI only">+ Create User</button>
+        <!-- 버튼 클릭 시 모달 열기 -->
+        <button onclick="openCreateModal()">+ Create User</button>
       </div>
     </div>
   </div>
@@ -62,41 +74,88 @@
     <table>
       <thead>
       <tr>
-        <th style="width:28%">Name</th>
-        <th style="width:28%">Email</th>
-        <th style="width:12%">Role</th>
-        <th style="width:12%">Status</th>
-        <th style="width:20%">Actions</th>
+        <th style="width:10%">ID</th>
+        <th style="width:30%">Email</th>
+        <th style="width:20%">Password</th>
+        <th style="width:15%">Status</th>
+        <th style="width:25%">Actions</th>
       </tr>
       </thead>
       <tbody>
-<!--      manual dataaaaa-->
-      <tr>
-        <td>Esha Writer</td>
-        <td>esha.writer@example.com</td>
-        <td>User</td>
-        <td>Active</td>
+      <!-- DB에서 가져온 실제 데이터 -->
+      <tr th:each="u : ${users}">
+        <td th:text="${u.id}">1</td>
+        <td th:text="${u.email}">user@example.com</td>
+        <td th:text="${u.password}">password</td>
+        <td>
+          <form th:action="@{/admin/users/{id}/toggle(id=${u.id})}" method="post" style="display:inline">
+            <button type="submit"
+                    class="badge"
+                    th:style="${u.enabled} ? 'background:#ecfdf5;color:#065f46;border:0' : 'background:#fef2f2;color:#991b1b;border:0'"
+                    th:text="${u.enabled} ? 'ENABLED' : 'DISABLED'">
+              ENABLED
+            </button>
+          </form>
+        </td>
         <td class="row">
-          <button class="ghost" title="UI only">Edit</button>
-          <button class="ghost" title="UI only">Reset PW</button>
-          <button class="ghost" title="UI only">Suspend</button>
+          <form th:action="@{/admin/users/{id}/delete(id=${u.id})}" method="post" style="display:inline"
+                onsubmit="return confirm('Delete this user?');">
+            <button type="submit" class="ghost">Delete</button>
+          </form>
         </td>
       </tr>
-      <tr>
-        <td>Esha Admin</td>
-        <td>esha.admin@example.com</td>
-        <td>Admin</td>
-        <td>Active</td>
-        <td class="row">
-          <button class="ghost" title="UI only">Edit</button>
-          <button class="ghost" title="UI only">Deactivate</button>
+
+      <!-- 사용자가 없을 때 -->
+      <tr th:if="${#lists.isEmpty(users)}">
+        <td colspan="5" style="text-align:center; color:#64748b; padding:20px;">
+          No users found. Click "+ Create User" to add one.
         </td>
       </tr>
       </tbody>
     </table>
   </div>
 
-
 </main>
+
+<!-- Create User 모달 -->
+<div id="createModal" class="modal">
+  <div class="modal-content">
+    <h3>Create New User</h3>
+    <form th:action="@{/admin/users}" method="post">
+      <label>Email</label>
+      <input name="email" type="email" placeholder="user@example.com" required />
+
+      <label>Password</label>
+      <input name="password" type="password" placeholder="Enter password" required />
+
+      <label style="display:flex; align-items:center; gap:8px; margin-top:16px;">
+        <input type="checkbox" name="enabled" checked />
+        <span>Account Enabled</span>
+      </label>
+
+      <div class="modal-actions">
+        <button type="submit">Create User</button>
+        <button type="button" class="ghost" onclick="closeCreateModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openCreateModal() {
+    document.getElementById('createModal').classList.add('active');
+  }
+
+  function closeCreateModal() {
+    document.getElementById('createModal').classList.remove('active');
+  }
+
+  // 모달 바깥 클릭 시 닫기
+  document.getElementById('createModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeCreateModal();
+    }
+  });
+</script>
 </body>
 </html>
