@@ -6,6 +6,7 @@
     <title th:text="'BetterPedia - ' + ${document.title}">BetterPedia</title>
 
     <!-- Your highlight system CSS -->
+    <link rel="stylesheet" th:href="@{/css/common-settings.css}">
     <link rel="stylesheet" th:href="@{/css/yein-highlight-system.css}">
 
     <!-- Default wiki style -->
@@ -282,7 +283,8 @@
     </div>
 </div>
 
-<!-- Your highlight system JavaScript -->
+<script th:src="@{/js/apply-settings.js}"></script>
+<!--highlight system JavaScript -->
 <script th:src="@{/js/yein-highlight-system.js}"></script>
 
 <!-- Additional page scripts -->

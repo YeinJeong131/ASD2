@@ -1,5 +1,7 @@
 package betterpedia.appearance.service;
 
+import betterpedia.user.entity.User;
+import betterpedia.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import betterpedia.appearance.entity.UserSettings;
@@ -7,9 +9,6 @@ import betterpedia.appearance.repository.UserSettingsRepository;
 
 import java.util.Arrays;
 import java.util.List;
-import betterpedia.user.entity.User;
-import betterpedia.user.repository.UserRepository;
-
 
 @Service
 public class UserSettingService {
@@ -20,42 +19,39 @@ public class UserSettingService {
     @Autowired
     private UserRepository userRepository;
 
-    // bring user settings (if there's no setting generate default settings)
+    // 설정 조회 - 없으면 기본값만 반환 (DB 저장 안 함)
     public UserSettings getUserSettings(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
-
-        return repository.findByUser(user)
-                .orElse(createDefaultSettings(user));
+        return repository.findByUserId(userId)
+                .orElseGet(() -> createDefaultSettingsObject(userId));
     }
 
-    // store user settings
-    public UserSettings saveUserSettings(Long userId, UserSettings settings) throws IllegalArgumentException{
-
-        // before saving user settings, check validation first
+    // 설정 저장
+    public UserSettings saveUserSettings(Long userId, UserSettings settings) throws IllegalArgumentException {
         validateSettings(settings);
 
+        // User 객체 조회
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // if there's original setting, update. if no generate new settings
-        if (repository.existsByUser(user)) {
-            UserSettings existing = repository.findByUser(user).get();
+        // 기존 설정이 있으면 업데이트, 없으면 새로 생성
+        if (repository.existsByUserId(userId)) {
+            UserSettings existing = repository.findByUserId(userId).get();
             updateExistingSettings(existing, settings);
             return repository.save(existing);
         } else {
+            // 새 설정에 User 객체 설정
             settings.setUser(user);
             return repository.save(settings);
         }
     }
 
-    // generate default settings
-    private UserSettings createDefaultSettings(User user) {
-        UserSettings defaultSettings = new UserSettings(user);
-        return repository.save(defaultSettings);
+    // 기본값 객체만 생성 (DB 저장 안 함)
+    private UserSettings createDefaultSettingsObject(Long userId) {
+        UserSettings defaultSettings = new UserSettings();
+        // User 객체를 설정하지 않음 - DB에 저장 안 하므로
+        return defaultSettings;
     }
 
-    // update original settings
     private void updateExistingSettings(UserSettings existing, UserSettings newSettings) {
         if (newSettings.getDarkMode() != null) {
             existing.setDarkMode(newSettings.getDarkMode());
@@ -80,8 +76,7 @@ public class UserSettingService {
         }
     }
 
-    // for enhanced service with validation
-    // - valid values for validation
+    // Validation
     private static final List<String> VALID_FONT_SIZES = Arrays.asList("small", "medium", "large", "extra-large");
     private static final List<String> VALID_DATE_FORMATS = Arrays.asList("DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD");
     private static final List<String> VALID_PAGE_WIDTHS = Arrays.asList("fixed", "wide");
@@ -90,22 +85,22 @@ public class UserSettingService {
 
     private void validateSettings(UserSettings settings) throws IllegalArgumentException {
         if (settings.getFontSize() != null && !VALID_FONT_SIZES.contains(settings.getFontSize())) {
-            throw new IllegalArgumentException("Font size must be one of " + VALID_FONT_SIZES + "\n" + "Invalid font size: " + settings.getFontSize());
+            throw new IllegalArgumentException("Invalid font size");
         }
         if (settings.getDateFormat() != null && !VALID_DATE_FORMATS.contains(settings.getDateFormat())) {
-            throw new IllegalArgumentException("DateFormat must be one of " + VALID_DATE_FORMATS + "\n" + "Invalid date format: " + settings.getDateFormat());
+            throw new IllegalArgumentException("Invalid date format");
         }
         if (settings.getPageWidth() != null && !VALID_PAGE_WIDTHS.contains(settings.getPageWidth())) {
-            throw new IllegalArgumentException("Page widths must be one of " + VALID_PAGE_WIDTHS + "\n" + "Invalid page width: " + settings.getPageWidth());
+            throw new IllegalArgumentException("Invalid page width");
         }
         if (settings.getFontStyle() != null && !VALID_FONT_STYLES.contains(settings.getFontStyle())) {
-            throw new IllegalArgumentException("Font styles must be one of" + VALID_FONT_STYLES + "\n" + "Invalid font style: " + settings.getFontStyle());
+            throw new IllegalArgumentException("Invalid font style");
         }
         if (settings.getLineSpacing() != null && !VALID_LINE_SPACINGS.contains(settings.getLineSpacing())) {
-            throw new IllegalArgumentException("line spacing must be one of " + VALID_LINE_SPACINGS + "\n" + "Invalid line spacing: " + settings.getLineSpacing());
+            throw new IllegalArgumentException("Invalid line spacing");
         }
-        if (settings.getTimeOffset() != null &&  (settings.getTimeOffset() < -12 || settings.getTimeOffset() > 14)) {
-            throw new IllegalArgumentException("Time offset (hours) must be between -12 and +14. Invalid: " + settings.getTimeOffset());
+        if (settings.getTimeOffset() != null && (settings.getTimeOffset() < -12 || settings.getTimeOffset() > 14)) {
+            throw new IllegalArgumentException("Time offset must be between -12 and +14");
         }
     }
 }

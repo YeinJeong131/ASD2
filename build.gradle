@@ -35,7 +35,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // for database
 
 	// H2 Database (for development)
-	runtimeOnly 'com.h2database:h2'
+	//runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	// MySQL Connector (if using MySQL)
 	//runtimeOnly 'mysql-connector-java'

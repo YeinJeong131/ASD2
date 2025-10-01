@@ -2,6 +2,8 @@ package betterpedia.appearance.service;
 
 import betterpedia.appearance.entity.UserSettings;
 import betterpedia.appearance.repository.UserSettingsRepository;
+import betterpedia.user.entity.User;
+import betterpedia.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -15,10 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @DisplayName("UserSettings Service Tests")
-class UserSettingServiceTest {
+class UserSettingsServiceTest {
 
     @Mock
     private UserSettingsRepository repository;
+
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private UserSettingService service;
@@ -32,24 +37,28 @@ class UserSettingServiceTest {
     @DisplayName("Save user settings - Success")
     void testSaveUserSettings_Success() {
         // Given
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+        user.setEmail("test@example.com");
+
         UserSettings settings = new UserSettings();
-        settings.setUserId(1L);
         settings.setDarkMode(true);
         settings.setFontSize("large");
         settings.setDateFormat("YYYY-MM-DD");
 
-        when(repository.existsByUserId(1L)).thenReturn(false);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(repository.existsByUserId(userId)).thenReturn(false);
         when(repository.save(any(UserSettings.class))).thenReturn(settings);
 
         // When
-        UserSettings saved = service.saveUserSettings(settings);
+        UserSettings saved = service.saveUserSettings(userId, settings);
 
         // Then
         assertNotNull(saved);
-        assertEquals(1L, saved.getUserId());
         assertTrue(saved.getDarkMode());
         assertEquals("large", saved.getFontSize());
-        verify(repository, times(1)).save(settings);
+        verify(repository, times(1)).save(any(UserSettings.class));
     }
 
     @Test
@@ -58,7 +67,6 @@ class UserSettingServiceTest {
         // Given
         Long userId = 1L;
         UserSettings settings = new UserSettings();
-        settings.setUserId(userId);
         settings.setDarkMode(false);
         settings.setFontSize("medium");
 
@@ -69,7 +77,6 @@ class UserSettingServiceTest {
 
         // Then
         assertNotNull(found);
-        assertEquals(userId, found.getUserId());
         assertEquals("medium", found.getFontSize());
         assertFalse(found.getDarkMode());
     }
@@ -79,32 +86,35 @@ class UserSettingServiceTest {
     void testGetUserSettings_NotFound_ReturnsDefault() {
         // Given
         Long userId = 999L;
-        UserSettings defaultSettings = new UserSettings(userId);
 
         when(repository.findByUserId(userId)).thenReturn(Optional.empty());
-        when(repository.save(any(UserSettings.class))).thenReturn(defaultSettings);
 
         // When
         UserSettings found = service.getUserSettings(userId);
 
         // Then
         assertNotNull(found);
-        assertEquals(userId, found.getUserId());
         assertFalse(found.getDarkMode()); // default is false
         assertEquals("medium", found.getFontSize()); // default is medium
+        verify(repository, never()).save(any()); // DB에 저장하지 않음
     }
 
     @Test
     @DisplayName("Validate settings - Invalid font size")
     void testValidateSettings_InvalidFontSize() {
         // Given
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+
         UserSettings settings = new UserSettings();
-        settings.setUserId(1L);
         settings.setFontSize("invalid-size");
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // When & Then
         assertThrows(IllegalArgumentException.class, () -> {
-            service.saveUserSettings(settings);
+            service.saveUserSettings(userId, settings);
         });
     }
 
@@ -113,26 +123,43 @@ class UserSettingServiceTest {
     void testUpdateExistingSettings_Success() {
         // Given
         Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+
         UserSettings existing = new UserSettings();
-        existing.setUserId(userId);
         existing.setDarkMode(false);
         existing.setFontSize("medium");
 
         UserSettings updated = new UserSettings();
-        updated.setUserId(userId);
         updated.setDarkMode(true);
         updated.setFontSize("large");
 
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(repository.existsByUserId(userId)).thenReturn(true);
         when(repository.findByUserId(userId)).thenReturn(Optional.of(existing));
         when(repository.save(any(UserSettings.class))).thenReturn(existing);
 
         // When
-        UserSettings result = service.saveUserSettings(updated);
+        UserSettings result = service.saveUserSettings(userId, updated);
 
         // Then
         assertTrue(result.getDarkMode());
         assertEquals("large", result.getFontSize());
         verify(repository, times(1)).save(existing);
+    }
+
+    @Test
+    @DisplayName("Save settings - User not found")
+    void testSaveUserSettings_UserNotFound() {
+        // Given
+        Long userId = 999L;
+        UserSettings settings = new UserSettings();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.saveUserSettings(userId, settings);
+        });
     }
 }

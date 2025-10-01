@@ -2,6 +2,8 @@ package betterpedia.notes.service;
 
 import betterpedia.notes.entity.Note;
 import betterpedia.notes.repository.NoteRepository;
+import betterpedia.user.entity.User;
+import betterpedia.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -22,12 +24,21 @@ class NoteServiceTest {
     @Mock
     private NoteRepository noteRepository;
 
+    @Mock
+    private UserRepository userRepository;
+
     @InjectMocks
     private NoteService noteService;
+
+    private User testUser;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        testUser = new User();
+        testUser.setId(1L);
+        testUser.setEmail("test@example.com");
     }
 
     @Test
@@ -39,8 +50,9 @@ class NoteServiceTest {
         String highlightedText = "Spring Framework is...";
         String noteContent = "Important concept!";
 
-        Note note = new Note(userId, pageUrl, highlightedText, noteContent, null);
+        Note note = new Note(testUser, pageUrl, highlightedText, noteContent, null);
 
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
         when(noteRepository.save(any(Note.class))).thenReturn(note);
 
         // When
@@ -48,7 +60,6 @@ class NoteServiceTest {
 
         // Then
         assertNotNull(saved);
-        assertEquals(userId, saved.getUserId());
         assertEquals(pageUrl, saved.getPageUrl());
         assertEquals(highlightedText, saved.getHighlightedText());
         verify(noteRepository, times(1)).save(any(Note.class));
@@ -59,11 +70,13 @@ class NoteServiceTest {
     void testGetAllNotesByUser_Success() {
         // Given
         Long userId = 1L;
-        Note note1 = new Note(userId, "/wiki/Java", "Java text", "Note 1", null);
-        Note note2 = new Note(userId, "/wiki/Spring", "Spring text", "Note 2", null);
+        Note note1 = new Note(testUser, "/wiki/Java", "Java text", "Note 1", null);
+        Note note2 = new Note(testUser, "/wiki/Spring", "Spring text", "Note 2", null);
 
         List<Note> notes = Arrays.asList(note1, note2);
-        when(noteRepository.findByUserIdOrderByCreatedDateDesc(userId)).thenReturn(notes);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        when(noteRepository.findByUserOrderByCreatedDateDesc(testUser)).thenReturn(notes);
 
         // When
         List<Note> found = noteService.getAllNotesByUser(userId);
@@ -71,7 +84,6 @@ class NoteServiceTest {
         // Then
         assertNotNull(found);
         assertEquals(2, found.size());
-        assertEquals(userId, found.get(0).getUserId());
     }
 
     @Test
@@ -81,9 +93,10 @@ class NoteServiceTest {
         Long userId = 1L;
         String pageUrl = "/wiki/Spring";
 
-        Note note = new Note(userId, pageUrl, "Spring text", "Spring note", null);
+        Note note = new Note(testUser, pageUrl, "Spring text", "Spring note", null);
 
-        when(noteRepository.findByUserIdAndPageUrlOrderByCreatedDateDesc(userId, pageUrl))
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        when(noteRepository.findByUserAndPageUrlOrderByCreatedDateDesc(testUser, pageUrl))
                 .thenReturn(Arrays.asList(note));
 
         // When
@@ -101,16 +114,17 @@ class NoteServiceTest {
         // Given
         Long noteId = 1L;
         Long userId = 1L;
-        Note existingNote = new Note(userId, "/wiki/Java", "Old text", "Old content", null);
+        Note existingNote = new Note(testUser, "/wiki/Java", "Old text", "Old content", null);
         existingNote.setNoteId(noteId);
 
         String newContent = "New content";
 
-        when(noteRepository.findByNoteIdAndUserId(noteId, userId)).thenReturn(Optional.of(existingNote));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        when(noteRepository.findByNoteIdAndUser(noteId, testUser)).thenReturn(Optional.of(existingNote));
         when(noteRepository.save(any(Note.class))).thenReturn(existingNote);
 
         // When
-        Note updated = noteService.updateNote(noteId, userId, newContent, null);
+        Note updated = noteService.updateNote(userId, noteId, newContent, null);
 
         // Then
         assertNotNull(updated);
@@ -124,10 +138,11 @@ class NoteServiceTest {
         // Given
         Long noteId = 1L;
         Long userId = 1L;
-        Note note = new Note(userId, "/wiki/Java", "Text", "Content", null);
+        Note note = new Note(testUser, "/wiki/Java", "Text", "Content", null);
         note.setNoteId(noteId);
 
-        when(noteRepository.findByNoteIdAndUserId(noteId, userId)).thenReturn(Optional.of(note));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        when(noteRepository.findByNoteIdAndUser(noteId, testUser)).thenReturn(Optional.of(note));
         doNothing().when(noteRepository).delete(note);
 
         // When
@@ -145,7 +160,8 @@ class NoteServiceTest {
         Long noteId = 999L;
         Long userId = 1L;
 
-        when(noteRepository.findByNoteIdAndUserId(noteId, userId)).thenReturn(Optional.empty());
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        when(noteRepository.findByNoteIdAndUser(noteId, testUser)).thenReturn(Optional.empty());
 
         // When
         boolean deleted = noteService.deleteNote(noteId, userId);
@@ -153,5 +169,18 @@ class NoteServiceTest {
         // Then
         assertFalse(deleted);
         verify(noteRepository, never()).delete(any());
+    }
+
+    @Test
+    @DisplayName("Save note - User not found")
+    void testSaveNote_UserNotFound() {
+        // Given
+        Long userId = 999L;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(RuntimeException.class, () -> {
+            noteService.saveNote(userId, "/wiki/Java", "text", "content", null, "yellow");
+        });
     }
 }
