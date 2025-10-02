@@ -4,13 +4,12 @@
 trigger:
   branches:
     include:
-      - main
       - appearance-note-feature
 
 pr:
   branches:
     include:
-      - main
+      - appearance-note-feature
 
 pool:
   vmImage: 'windows-latest'
