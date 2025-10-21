@@ -2,40 +2,14 @@
 <html lang="en" xmln:th="http://www.thymeleaf.org" xmlns:xmln="http://www.w3.org/1999/xhtml">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width", intial-scale=1.0>
+        <meta name="viewport" content="width=device-width, intial-scale=1.0">
         <title>Betterpedia - Appearance Settings</title>
-        <link rel="stylesheet" th:href="@{/css/settings.css}">
-        <style>
-            /* Nav Bar */
-            .navbar {
-                background: #2c3e50;
-                padding: 15px 30px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin: 0;
-            }
-            .navbar-brand {
-                color: white;
-                font-size: 24px;
-                font-weight: bold;
-                text-decoration: none;
-            }
-            .navbar-links {
-                display: flex;
-                gap: 20px;
-            }
-            .navbar-links a {
-                color: white;
-                text-decoration: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                transition: background 0.3s;
-            }
-            .navbar-links a:hover {
-                background: rgba(255,255,255,0.1);
-            }
-        </style>
+
+        <!-- Settings Specific CSS -->
+        <link rel="stylesheet" th:href="@{/css/settings_new.css}">
+        <!-- Theme Variables / -->
+        <link rel="stylesheet" th:href="@{/css/theme-variables.css}">
+
     </head>
     <body>
         <!-- Nav Bar -->
@@ -45,7 +19,7 @@
                 <a th:href="@{/wiki}">Wiki Home</a>
                 <a th:href="@{/my-notes}">My Notes</a>
                 <a th:href="@{/settings}">Settings</a>
-                <a th:href="@{/account}">Account</a>
+                <a th:href="@{/account-2}">Account</a>
                 <a th:href="@{/logout}">Sign out</a>
             </div>
         </nav>

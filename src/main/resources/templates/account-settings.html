@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <title th:text="${pageTitle} ?: 'Account Settings'">Account Settings</title>
 
+    <link rel="stylesheet" th:href="@{/css/theme-variables.css}">
+    <link rel="stylesheet" th:href="@{/css/settings.css}">
 
     <style>
         body{font-family:ui-sans-serif,system-ui,Arial;margin:0;background:#f6f8fb;color:#0f172a}
@@ -47,13 +49,13 @@
         <!-- Profile -->
         <section class="card">
             <h2>Profile</h2>
-            <form th:action="@{/account/profile}" method="post">
+            <form th:action="@{/account-2/profile}" method="post">
                 <input type="hidden" name="uid" th:value="${user.id}" />
                 <label>Email</label>
                 <input name="email" type="email" th:value="${user.email}" required />
                 <div class="actions">
                     <button type="submit">Save profile</button>
-                    <a th:href="@{/account}" class="ghost" style="text-decoration:none;display:inline-block;padding:10px 14px;border-radius:10px;">Cancel</a>
+                    <a th:href="@{/account-2}" class="ghost" style="text-decoration:none;display:inline-block;padding:10px 14px;border-radius:10px;">Cancel</a>
                 </div>
             </form>
         </section>

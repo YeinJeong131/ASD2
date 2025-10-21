@@ -1,4 +1,10 @@
 
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+});
 class YeinHighlightSystem {
     constructor(options = {}) {
         // 설정 옵션

@@ -1,3 +1,11 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+});
+
+
 // 모든 페이지에서 사용자 설정 적용
 (async function() {
     try {

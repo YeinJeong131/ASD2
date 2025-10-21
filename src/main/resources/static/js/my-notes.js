@@ -1,3 +1,11 @@
+
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+});
+
 // My Notes 페이지 JavaScript
 console.log('My Notes page loaded');
 

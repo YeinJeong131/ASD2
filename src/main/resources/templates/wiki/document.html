@@ -6,8 +6,10 @@
     <title th:text="'BetterPedia - ' + ${document.title}">BetterPedia</title>
 
     <!-- Your highlight system CSS -->
-    <link rel="stylesheet" th:href="@{/css/common-settings.css}">
+
     <link rel="stylesheet" th:href="@{/css/yein-highlight-system.css}">
+    <link rel="stylesheet" th:href="@{/css/theme-variables.css}">
+    <link rel="stylesheet" th:href="@{/css/settings.css}">
 
     <!-- Default wiki style -->
     <style>
@@ -127,6 +129,30 @@
         .breadcrumb a:hover {
             text-decoration: underline;
         }
+        /* 다크모드 지원 - */
+        [data-theme="dark"] body {
+        background: #2d2d2d !important;
+        color: #ffffff !important;
+        }
+
+        [data-theme="dark"] .wiki-sidebar,
+        [data-theme="dark"] .wiki-content,
+        [data-theme="dark"] .wiki-info,
+        [data-theme="dark"] .highlight-status {
+        background: #404040 !important;
+        color: #ffffff !important;
+        }
+
+        [data-theme="dark"] .breadcrumb {
+        background: #404040 !important;
+        color: #ffffff !important;
+        }
+
+        [data-theme="dark"] .wiki-content h1,
+        [data-theme="dark"] .wiki-content h2,
+        [data-theme="dark"] .wiki-content h3 {
+        color: #ffffff !important;
+        }
     </style>
 </head>
 <body>
@@ -154,7 +180,7 @@
            onmouseout="this.style.background='transparent'">
             ⚙️ Settings
         </a>
-        <a th:href="@{/account}"
+        <a th:href="@{/account-2}"
            style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px;"
            onmouseover="this.style.background='rgba(255,255,255,0.1)'"
            onmouseout="this.style.background='transparent'">

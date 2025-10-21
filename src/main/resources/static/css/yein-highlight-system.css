@@ -1,7 +1,247 @@
 
 
+/*.yein-highlight {*/
+/*    background-color: #ffff00;*/
+/*    padding: 1px 2px;*/
+/*    border-radius: 2px;*/
+/*    cursor: pointer;*/
+/*    position: relative;*/
+/*    transition: all 0.2s ease;*/
+/*    line-height: inherit;*/
+/*    display: inline;*/
+/*}*/
+
+/*.yein-highlight:hover {*/
+/*    background-color: #ffeb3b;*/
+/*    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);*/
+/*    transform: translateY(-1px);*/
+/*}*/
+
+/*!* 색상별 스타일 *!*/
+/*.yein-highlight.yellow {*/
+/*    background-color: #ffff00;*/
+/*    color: #000;*/
+/*}*/
+
+/*.yein-highlight.blue {*/
+/*    background-color: #2196f3;*/
+/*    color: #fff;*/
+/*}*/
+
+/*.yein-highlight.blue:hover {*/
+/*    background-color: #1976d2;*/
+/*}*/
+
+/*.yein-highlight.green {*/
+/*    background-color: #4caf50;*/
+/*    color: #fff;*/
+/*}*/
+
+/*.yein-highlight.green:hover {*/
+/*    background-color: #388e3c;*/
+/*}*/
+
+/*.yein-highlight.red {*/
+/*    background-color: #f44336;*/
+/*    color: #fff;*/
+/*}*/
+
+/*.yein-highlight.red:hover {*/
+/*    background-color: #d32f2f;*/
+/*}*/
+
+/*!* 노트가 있는 하이라이트 표시 *!*/
+/*.yein-highlight.has-note::after {*/
+/*    content: "📝";*/
+/*    font-size: 10px;*/
+/*    position: absolute;*/
+/*    top: -8px;*/
+/*    right: -8px;*/
+/*    background: #333;*/
+/*    color: white;*/
+/*    border-radius: 50%;*/
+/*    width: 14px;*/
+/*    height: 14px;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    font-size: 8px;*/
+/*}*/
+
+/*!* ========================================*/
+/*   툴팁 스타일*/
+/*   ======================================== *!*/
+
+/*.yein-highlight-tooltip {*/
+/*    position: absolute;*/
+/*    background: #333;*/
+/*    color: white;*/
+/*    padding: 8px;*/
+/*    border-radius: 6px;*/
+/*    font-size: 12px;*/
+/*    white-space: nowrap;*/
+/*    z-index: 10000;*/
+/*    display: none;*/
+/*    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);*/
+/*    animation: yein-tooltip-appear 0.2s ease-out;*/
+/*}*/
+
+/*!* 툴팁 화살표 *!*/
+/*.yein-highlight-tooltip::after {*/
+/*    content: '';*/
+/*    position: absolute;*/
+/*    top: 100%;*/
+/*    left: 50%;*/
+/*    margin-left: -5px;*/
+/*    border-width: 5px;*/
+/*    border-style: solid;*/
+/*    border-color: #333 transparent transparent transparent;*/
+/*}*/
+
+/*!* 툴팁 버튼들 *!*/
+/*.yein-highlight-tooltip .tooltip-btn {*/
+/*    background: #4CAF50;*/
+/*    color: white;*/
+/*    border: none;*/
+/*    padding: 6px 10px;*/
+/*    margin: 0 2px;*/
+/*    border-radius: 3px;*/
+/*    cursor: pointer;*/
+/*    font-size: 11px;*/
+/*    transition: background 0.2s;*/
+/*    display: inline-block;*/
+/*}*/
+
+/*.yein-highlight-tooltip .tooltip-btn:hover {*/
+/*    background: #45a049;*/
+/*    transform: translateY(-1px);*/
+/*}*/
+
+/*!* 버튼 색상별 스타일 *!*/
+/*.yein-highlight-tooltip .tooltip-btn.yellow {*/
+/*    background: #ffc107;*/
+/*    color: #000;*/
+/*}*/
+
+/*.yein-highlight-tooltip .tooltip-btn.yellow:hover {*/
+/*    background: #ffb300;*/
+/*}*/
+
+/*.yein-highlight-tooltip .tooltip-btn.blue {*/
+/*    background: #2196f3;*/
+/*}*/
+
+/*.yein-highlight-tooltip .tooltip-btn.blue:hover {*/
+/*    background: #1976d2;*/
+/*}*/
+
+/*.yein-highlight-tooltip .tooltip-btn.green {*/
+/*    background: #4caf50;*/
+/*}*/
+
+/*.yein-highlight-tooltip .tooltip-btn.green:hover {*/
+/*    background: #388e3c;*/
+/*}*/
+
+/*.yein-highlight-tooltip .tooltip-btn.red {*/
+/*    background: #f44336;*/
+/*}*/
+
+/*.yein-highlight-tooltip .tooltip-btn.red:hover {*/
+/*    background: #d32f2f;*/
+/*}*/
+
+/*.yein-highlight-tooltip .tooltip-btn.note {*/
+/*    background: #9c27b0;*/
+/*}*/
+
+/*.yein-highlight-tooltip .tooltip-btn.note:hover {*/
+/*    background: #7b1fa2;*/
+/*}*/
+
+/*.yein-highlight-tooltip .tooltip-btn.delete {*/
+/*    background: #f44336;*/
+/*}*/
+
+/*.yein-highlight-tooltip .tooltip-btn.delete:hover {*/
+/*    background: #d32f2f;*/
+/*}*/
+
+/*.yein-highlight-tooltip .tooltip-btn.edit {*/
+/*    background: #ff9800;*/
+/*}*/
+
+/*.yein-highlight-tooltip .tooltip-btn.edit:hover {*/
+/*    background: #f57c00;*/
+/*}*/
+
+/*!* ========================================*/
+/*   애니메이션*/
+/*   ======================================== *!*/
+
+/*@keyframes yein-tooltip-appear {*/
+/*    from {*/
+/*        opacity: 0;*/
+/*        transform: translateY(-10px) scale(0.8);*/
+/*    }*/
+/*    to {*/
+/*        opacity: 1;*/
+/*        transform: translateY(0) scale(1);*/
+/*    }*/
+/*}*/
+
+/*!* ========================================*/
+/*   토스트 메시지 스타일*/
+/*   ======================================== *!*/
+
+/*.yein-highlight-toast {*/
+/*    position: fixed;*/
+/*    top: 20px;*/
+/*    right: 20px;*/
+/*    padding: 12px 20px;*/
+/*    border-radius: 4px;*/
+/*    color: white;*/
+/*    z-index: 10001;*/
+/*    font-size: 14px;*/
+/*    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;*/
+/*    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);*/
+/*    animation: yein-toast-slide-in 0.3s ease-out;*/
+/*}*/
+
+/*.yein-highlight-toast.success {*/
+/*    background: #4CAF50;*/
+/*}*/
+
+/*.yein-highlight-toast.error {*/
+/*    background: #f44336;*/
+/*}*/
+
+/*.yein-highlight-toast.warning {*/
+/*    background: #ff9800;*/
+/*}*/
+
+/*.yein-highlight-toast.info {*/
+/*    background: #2196F3;*/
+/*}*/
+
+/*@keyframes yein-toast-slide-in {*/
+/*    from {*/
+/*        opacity: 0;*/
+/*        transform: translateX(100%);*/
+/*    }*/
+/*    to {*/
+/*        opacity: 1;*/
+/*        transform: translateX(0);*/
+/*    }*/
+/*}*/
+
+/* Enhanced Yein Highlight System with Dark Mode Support */
+
+/* ========================================
+   하이라이트 기본 스타일
+   ======================================== */
+
 .yein-highlight {
-    background-color: #ffff00;
     padding: 1px 2px;
     border-radius: 2px;
     cursor: pointer;
@@ -9,84 +249,105 @@
     transition: all 0.2s ease;
     line-height: inherit;
     display: inline;
+    /* 기본 하이라이트 색상 (CSS 변수 사용) */
+    background-color: var(--highlight-yellow);
+    color: var(--text-primary);
 }
 
 .yein-highlight:hover {
-    background-color: #ffeb3b;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 3px var(--shadow-hover);
     transform: translateY(-1px);
+    /* 호버 시 밝기 조정 */
+    filter: brightness(1.1);
 }
 
-/* 색상별 스타일 */
+/* ========================================
+   색상별 하이라이트 스타일 (다크모드 지원)
+   ======================================== */
+
 .yein-highlight.yellow {
-    background-color: #ffff00;
-    color: #000;
+    background-color: var(--highlight-yellow);
+    color: var(--text-primary);
 }
 
 .yein-highlight.blue {
-    background-color: #2196f3;
-    color: #fff;
-}
-
-.yein-highlight.blue:hover {
-    background-color: #1976d2;
+    background-color: var(--highlight-blue);
+    color: var(--text-primary);
 }
 
 .yein-highlight.green {
-    background-color: #4caf50;
-    color: #fff;
-}
-
-.yein-highlight.green:hover {
-    background-color: #388e3c;
+    background-color: var(--highlight-green);
+    color: var(--text-primary);
 }
 
 .yein-highlight.red {
-    background-color: #f44336;
-    color: #fff;
+    background-color: var(--highlight-red);
+    color: var(--text-primary);
 }
 
-.yein-highlight.red:hover {
-    background-color: #d32f2f;
+.yein-highlight.purple {
+    background-color: var(--highlight-purple);
+    color: var(--text-primary);
 }
 
-/* 노트가 있는 하이라이트 표시 */
+/* 호버 효과는 filter로 통일 */
+.yein-highlight.yellow:hover,
+.yein-highlight.blue:hover,
+.yein-highlight.green:hover,
+.yein-highlight.red:hover,
+.yein-highlight.purple:hover {
+    filter: brightness(1.2) saturate(1.1);
+}
+
+/* ========================================
+   노트 표시 아이콘
+   ======================================== */
+
 .yein-highlight.has-note::after {
     content: "📝";
-    font-size: 10px;
+    font-size: 8px;
     position: absolute;
     top: -8px;
     right: -8px;
-    background: #333;
-    color: white;
+    background: var(--text-primary);
+    color: var(--bg-primary);
     border-radius: 50%;
     width: 14px;
     height: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 8px;
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-fast);
+}
+
+/* Dark mode에서 아이콘 조정 */
+[data-theme="dark"] .yein-highlight.has-note::after {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border-color: var(--border-light);
 }
 
 /* ========================================
-   툴팁 스타일
+   툴팁 스타일 (다크모드 지원)
    ======================================== */
 
 .yein-highlight-tooltip {
     position: absolute;
-    background: #333;
-    color: white;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
     padding: 8px;
     border-radius: 6px;
     font-size: 12px;
     white-space: nowrap;
     z-index: 10000;
     display: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--card-hover-shadow);
     animation: yein-tooltip-appear 0.2s ease-out;
 }
 
-/* 툴팁 화살표 */
+/* 툴팁 화살표 (다크모드 지원) */
 .yein-highlight-tooltip::after {
     content: '';
     position: absolute;
@@ -95,88 +356,152 @@
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: #333 transparent transparent transparent;
+    border-color: var(--card-bg) transparent transparent transparent;
 }
 
-/* 툴팁 버튼들 */
+/* ========================================
+   툴팁 버튼들 (다크모드 지원)
+   ======================================== */
+
 .yein-highlight-tooltip .tooltip-btn {
-    background: #4CAF50;
-    color: white;
     border: none;
     padding: 6px 10px;
     margin: 0 2px;
     border-radius: 3px;
     cursor: pointer;
     font-size: 11px;
-    transition: background 0.2s;
+    transition: all var(--transition-fast);
     display: inline-block;
+    font-weight: 500;
 }
 
 .yein-highlight-tooltip .tooltip-btn:hover {
-    background: #45a049;
     transform: translateY(-1px);
+    filter: brightness(1.1);
 }
 
-/* 버튼 색상별 스타일 */
+/* 버튼 색상별 스타일 (다크모드 호환) */
 .yein-highlight-tooltip .tooltip-btn.yellow {
     background: #ffc107;
     color: #000;
 }
 
-.yein-highlight-tooltip .tooltip-btn.yellow:hover {
-    background: #ffb300;
-}
-
 .yein-highlight-tooltip .tooltip-btn.blue {
-    background: #2196f3;
-}
-
-.yein-highlight-tooltip .tooltip-btn.blue:hover {
-    background: #1976d2;
+    background: var(--brand-primary);
+    color: white;
 }
 
 .yein-highlight-tooltip .tooltip-btn.green {
-    background: #4caf50;
-}
-
-.yein-highlight-tooltip .tooltip-btn.green:hover {
-    background: #388e3c;
+    background: var(--success-color);
+    color: white;
 }
 
 .yein-highlight-tooltip .tooltip-btn.red {
-    background: #f44336;
-}
-
-.yein-highlight-tooltip .tooltip-btn.red:hover {
-    background: #d32f2f;
+    background: var(--accent-color);
+    color: white;
 }
 
 .yein-highlight-tooltip .tooltip-btn.note {
     background: #9c27b0;
-}
-
-.yein-highlight-tooltip .tooltip-btn.note:hover {
-    background: #7b1fa2;
+    color: white;
 }
 
 .yein-highlight-tooltip .tooltip-btn.delete {
-    background: #f44336;
-}
-
-.yein-highlight-tooltip .tooltip-btn.delete:hover {
-    background: #d32f2f;
+    background: var(--accent-color);
+    color: white;
 }
 
 .yein-highlight-tooltip .tooltip-btn.edit {
-    background: #ff9800;
-}
-
-.yein-highlight-tooltip .tooltip-btn.edit:hover {
-    background: #f57c00;
+    background: var(--warning-color);
+    color: white;
 }
 
 /* ========================================
-   애니메이션
+   토스트 메시지 스타일 (다크모드 지원)
+   ======================================== */
+
+.yein-highlight-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    z-index: 10001;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    box-shadow: var(--card-hover-shadow);
+    animation: yein-toast-slide-in 0.3s ease-out;
+    border: 1px solid transparent;
+}
+
+.yein-highlight-toast.success {
+    background: var(--success-color);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.yein-highlight-toast.error {
+    background: var(--accent-color);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.yein-highlight-toast.warning {
+    background: var(--warning-color);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.yein-highlight-toast.info {
+    background: var(--info-color);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ========================================
+   다크모드 전용 조정
+   ======================================== */
+
+/* 다크모드에서 하이라이트 색상 조정 */
+[data-theme="dark"] .yein-highlight {
+    /* 다크모드에서는 더 진한 색상 사용 */
+    border: 1px solid var(--border-light);
+}
+
+[data-theme="dark"] .yein-highlight.yellow {
+    background-color: #4a4a1a; /* 더 진한 노란색 */
+    color: #ffeb3b;
+}
+
+[data-theme="dark"] .yein-highlight.blue {
+    background-color: #1a3a4a; /* 더 진한 파란색 */
+    color: #64b5f6;
+}
+
+[data-theme="dark"] .yein-highlight.green {
+    background-color: #1a4a2a; /* 더 진한 초록색 */
+    color: #81c784;
+}
+
+[data-theme="dark"] .yein-highlight.red {
+    background-color: #4a1a1a; /* 더 진한 빨간색 */
+    color: #e57373;
+}
+
+[data-theme="dark"] .yein-highlight.purple {
+    background-color: #3a1a4a; /* 더 진한 보라색 */
+    color: #ba68c8;
+}
+
+/* 다크모드에서 툴팁 조정 */
+[data-theme="dark"] .yein-highlight-tooltip {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .yein-highlight-tooltip::after {
+    border-color: var(--bg-tertiary) transparent transparent transparent;
+}
+
+/* ========================================
+   애니메이션 (기존 유지)
    ======================================== */
 
 @keyframes yein-tooltip-appear {
@@ -190,40 +515,6 @@
     }
 }
 
-/* ========================================
-   토스트 메시지 스타일
-   ======================================== */
-
-.yein-highlight-toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 12px 20px;
-    border-radius: 4px;
-    color: white;
-    z-index: 10001;
-    font-size: 14px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    animation: yein-toast-slide-in 0.3s ease-out;
-}
-
-.yein-highlight-toast.success {
-    background: #4CAF50;
-}
-
-.yein-highlight-toast.error {
-    background: #f44336;
-}
-
-.yein-highlight-toast.warning {
-    background: #ff9800;
-}
-
-.yein-highlight-toast.info {
-    background: #2196F3;
-}
-
 @keyframes yein-toast-slide-in {
     from {
         opacity: 0;
@@ -232,5 +523,54 @@
     to {
         opacity: 1;
         transform: translateX(0);
+    }
+}
+
+/* ========================================
+   반응형 디자인
+   ======================================== */
+
+@media (max-width: 768px) {
+    .yein-highlight-tooltip {
+        font-size: 11px;
+        padding: 6px;
+    }
+
+    .yein-highlight-tooltip .tooltip-btn {
+        padding: 4px 8px;
+        font-size: 10px;
+        margin: 0 1px;
+    }
+
+    .yein-highlight-toast {
+        right: 10px;
+        top: 10px;
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+}
+
+/* ========================================
+   접근성 개선
+   ======================================== */
+
+.yein-highlight:focus {
+    outline: 2px solid var(--brand-primary);
+    outline-offset: 1px;
+}
+
+.yein-highlight-tooltip .tooltip-btn:focus {
+    outline: 2px solid var(--brand-primary);
+    outline-offset: 1px;
+}
+
+/* 고대비 모드 지원 */
+@media (prefers-contrast: high) {
+    .yein-highlight {
+        border: 2px solid var(--text-primary);
+    }
+
+    .yein-highlight-tooltip {
+        border: 2px solid var(--text-primary);
     }
 }

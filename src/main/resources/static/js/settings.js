@@ -1,4 +1,12 @@
 // Settings page JavaScript
+
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+});
+
 document.addEventListener('DOMContentLoaded', async function() {
     // const USER_ID = 1; // Default user ID for testing
     // 나중에 세션 방식으로 변경

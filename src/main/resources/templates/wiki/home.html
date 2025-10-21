@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Betterpedia - Wiki Home</title>
-    <link rel="stylesheet" th:href="@{/css/common-settings.css}">
+
+    <link rel="stylesheet" th:href="@{/css/theme-variables.css}">
+    <link rel="stylesheet" th:href="@{/css/settings_new.css}">
     <style>
         * {
             margin: 0;
@@ -143,6 +145,29 @@
             font-size: 18px;
             margin-bottom: 20px;
         }
+        [data-theme="dark"] body {
+            background-color: #2d2d2d !important;
+            color: #ffffff !important;
+        }
+
+        [data-theme="dark"] .header,
+        [data-theme="dark"] .document-card {
+            background-color: #404040 !important;
+            color: #ffffff !important;
+            border-color: #555555 !important;
+        }
+
+        [data-theme="dark"] .document-card h3 {
+            color: #ffffff !important;
+        }
+
+        [data-theme="dark"] .document-card p {
+            color: #b0b0b0 !important;
+        }
+
+        [data-theme="dark"] .container {
+            background-color: #2d2d2d !important;
+        }
     </style>
 </head>
 <body>
@@ -152,7 +177,7 @@
     <div class="navbar-links">
         <a th:href="@{/my-notes}">📝 My Notes</a>
         <a th:href="@{/settings}">⚙️ Appearance Settings</a>
-        <a th:href="@{/account}">👤 Account</a>
+        <a th:href="@{/account-2}">👤 Account-2</a>
     </div>
 </nav>
 

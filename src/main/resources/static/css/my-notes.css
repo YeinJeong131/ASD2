@@ -1,35 +1,220 @@
-/* My Notes Page Styles */
+/*!* My Notes Page Styles *!*/
+
+/*.sidebar {*/
+/*    min-height: 100vh;*/
+/*    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);*/
+/*}*/
+
+/*.sidebar-heading {*/
+/*    font-size: 1.2rem;*/
+/*    color: #495057;*/
+/*    padding: 0.5rem 1rem;*/
+/*    margin-bottom: 1rem;*/
+/*    border-bottom: 1px solid #dee2e6;*/
+/*}*/
+
+/*!* 노트 카드 스타일 *!*/
+/*.note-card {*/
+/*    transition: all 0.2s ease;*/
+/*    border-left: 4px solid #dee2e6;*/
+/*}*/
+
+/*.note-card:hover {*/
+/*    box-shadow: 0 2px 8px rgba(0,0,0,0.1);*/
+/*    border-left-color: #007bff;*/
+/*}*/
+
+/*!* 하이라이트 색상별 스타일 *!*/
+/*.highlighted-text {*/
+/*    padding: 8px 12px;*/
+/*    border-radius: 4px;*/
+/*    background-color: #f8f9fa;*/
+/*    border-left: 3px solid #dee2e6;*/
+/*}*/
+
+/*.highlighted-text[data-color="yellow"] {*/
+/*    background-color: #fff3cd;*/
+/*    border-left-color: #ffc107;*/
+/*}*/
+
+/*.highlighted-text[data-color="blue"] {*/
+/*    background-color: #cce5ff;*/
+/*    border-left-color: #007bff;*/
+/*}*/
+
+/*.highlighted-text[data-color="green"] {*/
+/*    background-color: #d1ecf1;*/
+/*    border-left-color: #28a745;*/
+/*}*/
+
+/*.highlighted-text[data-color="red"] {*/
+/*    background-color: #f8d7da;*/
+/*    border-left-color: #dc3545;*/
+/*}*/
+
+/*.highlighted-text[data-color="purple"] {*/
+/*    background-color: #e2e3f3;*/
+/*    border-left-color: #6f42c1;*/
+/*}*/
+
+/*!* 하이라이트 배지 *!*/
+/*.highlight-badge.yellow {*/
+/*    background-color: #ffc107 !important;*/
+/*    color: #000;*/
+/*}*/
+
+/*.highlight-badge.blue {*/
+/*    background-color: #007bff !important;*/
+/*}*/
+
+/*.highlight-badge.green {*/
+/*    background-color: #28a745 !important;*/
+/*}*/
+
+/*.highlight-badge.red {*/
+/*    background-color: #dc3545 !important;*/
+/*}*/
+
+/*.highlight-badge.purple {*/
+/*    background-color: #6f42c1 !important;*/
+/*}*/
+
+/*!* 노트 내용 *!*/
+/*.note-content {*/
+/*    background-color: #f8f9fa;*/
+/*    padding: 12px;*/
+/*    border-radius: 4px;*/
+/*    border-left: 3px solid #6c757d;*/
+/*}*/
+
+/*!* 페이지 링크 *!*/
+/*.page-link {*/
+/*    color: #495057;*/
+/*    text-decoration: none;*/
+/*}*/
+
+/*.page-link:hover {*/
+/*    color: #007bff;*/
+/*    text-decoration: underline;*/
+/*}*/
+
+/*!* 페이지 그룹 *!*/
+/*.page-group {*/
+/*    border: 1px solid #dee2e6;*/
+/*    border-radius: 8px;*/
+/*    padding: 1rem;*/
+/*    background-color: #f8f9fa;*/
+/*}*/
+
+/*.page-group-title {*/
+/*    color: #495057;*/
+/*    margin-bottom: 1rem;*/
+/*    padding-bottom: 0.5rem;*/
+/*    border-bottom: 1px solid #dee2e6;*/
+/*}*/
+
+/*!* 액션 버튼 *!*/
+/*.note-actions-bottom .btn {*/
+/*    font-size: 0.8rem;*/
+/*}*/
+
+/*.btn-xs {*/
+/*    padding: 0.25rem 0.5rem;*/
+/*    font-size: 0.75rem;*/
+/*    line-height: 1.5;*/
+/*    border-radius: 0.2rem;*/
+/*}*/
+
+/*!* 반응형 *!*/
+/*@media (max-width: 768px) {*/
+/*    .sidebar {*/
+/*        min-height: auto;*/
+/*    }*/
+
+/*    .note-card {*/
+/*        margin-bottom: 1rem !important;*/
+/*    }*/
+
+/*    .note-actions-bottom {*/
+/*        flex-direction: column;*/
+/*    }*/
+
+/*    .note-actions-bottom .btn {*/
+/*        margin-bottom: 0.25rem;*/
+/*    }*/
+/*}*/
+
+/*!* 토스트 애니메이션 *!*/
+/*.custom-toast {*/
+/*    animation: slideInRight 0.3s ease-out;*/
+/*}*/
+
+/*@keyframes slideInRight {*/
+/*    from {*/
+/*        transform: translateX(100%);*/
+/*        opacity: 0;*/
+/*    }*/
+/*    to {*/
+/*        transform: translateX(0);*/
+/*        opacity: 1;*/
+/*    }*/
+/*}*/
+
+/*!* 로딩 상태 *!*/
+/*.loading {*/
+/*    opacity: 0.6;*/
+/*    pointer-events: none;*/
+/*}*/
+
+/*!* 빈 상태 스타일 *!*/
+/*.text-center i.fa-3x {*/
+/*    opacity: 0.3;*/
+/*}*/
+
+/* My Notes Page Styles - 원래 디자인 유지 + 다크모드만 추가 */
+
+/* ========================================
+   기본 스타일 (원래대로 유지)
+   ======================================== */
 
 .sidebar {
     min-height: 100vh;
     box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    /* 다크모드 지원 추가 */
+    background-color: var(--bg-primary, #f8f9fa) !important;
+    color: var(--text-primary, inherit);
 }
 
 .sidebar-heading {
     font-size: 1.2rem;
-    color: #495057;
+    color: var(--text-primary, #495057);
     padding: 0.5rem 1rem;
     margin-bottom: 1rem;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--border-color, #dee2e6);
 }
 
-/* 노트 카드 스타일 */
+/* 노트 카드 스타일 (원래대로) */
 .note-card {
     transition: all 0.2s ease;
-    border-left: 4px solid #dee2e6;
+    border-left: 4px solid var(--border-color, #dee2e6);
+    /* 다크모드 지원 */
+    background-color: var(--card-bg, #ffffff);
+    border-color: var(--border-color, #dee2e6);
+    color: var(--text-primary, inherit);
 }
 
 .note-card:hover {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    border-left-color: #007bff;
+    border-left-color: var(--accent-color, #007bff);
 }
 
-/* 하이라이트 색상별 스타일 */
+/* 하이라이트 색상별 스타일 (원래대로) */
 .highlighted-text {
     padding: 8px 12px;
     border-radius: 4px;
-    background-color: #f8f9fa;
-    border-left: 3px solid #dee2e6;
+    background-color: var(--bg-secondary, #f8f9fa);
+    border-left: 3px solid var(--border-color, #dee2e6);
+    color: var(--text-primary, inherit);
 }
 
 .highlighted-text[data-color="yellow"] {
@@ -57,7 +242,7 @@
     border-left-color: #6f42c1;
 }
 
-/* 하이라이트 배지 */
+/* 하이라이트 배지 (원래대로) */
 .highlight-badge.yellow {
     background-color: #ffc107 !important;
     color: #000;
@@ -79,41 +264,42 @@
     background-color: #6f42c1 !important;
 }
 
-/* 노트 내용 */
+/* 노트 내용 (원래대로) */
 .note-content {
-    background-color: #f8f9fa;
+    background-color: var(--bg-secondary, #f8f9fa);
     padding: 12px;
     border-radius: 4px;
-    border-left: 3px solid #6c757d;
+    border-left: 3px solid var(--text-secondary, #6c757d);
+    color: var(--text-primary, inherit);
 }
 
-/* 페이지 링크 */
+/* 페이지 링크 (원래대로) */
 .page-link {
-    color: #495057;
+    color: var(--text-secondary, #495057);
     text-decoration: none;
 }
 
 .page-link:hover {
-    color: #007bff;
+    color: var(--accent-color, #007bff);
     text-decoration: underline;
 }
 
-/* 페이지 그룹 */
+/* 페이지 그룹 (원래대로) */
 .page-group {
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-color, #dee2e6);
     border-radius: 8px;
     padding: 1rem;
-    background-color: #f8f9fa;
+    background-color: var(--bg-secondary, #f8f9fa);
 }
 
 .page-group-title {
-    color: #495057;
+    color: var(--text-primary, #495057);
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--border-color, #dee2e6);
 }
 
-/* 액션 버튼 */
+/* 액션 버튼 (원래대로) */
 .note-actions-bottom .btn {
     font-size: 0.8rem;
 }
@@ -125,7 +311,52 @@
     border-radius: 0.2rem;
 }
 
-/* 반응형 */
+/* ========================================
+   다크모드 전용 (필요한 것만 추가)
+   ======================================== */
+
+/* 다크모드에서만 하이라이트 색상 조정 */
+[data-theme="dark"] .highlighted-text[data-color="yellow"] {
+    background-color: #4a4a1a;
+    color: #ffeb3b;
+    border-left-color: #ffb300;
+}
+
+[data-theme="dark"] .highlighted-text[data-color="blue"] {
+    background-color: #1a3a4a;
+    color: #64b5f6;
+    border-left-color: #4a9eff;
+}
+
+[data-theme="dark"] .highlighted-text[data-color="green"] {
+    background-color: #1a4a2a;
+    color: #81c784;
+    border-left-color: #51cf66;
+}
+
+[data-theme="dark"] .highlighted-text[data-color="red"] {
+    background-color: #4a1a1a;
+    color: #e57373;
+    border-left-color: #ff6b6b;
+}
+
+[data-theme="dark"] .highlighted-text[data-color="purple"] {
+    background-color: #3a1a4a;
+    color: #ba68c8;
+    border-left-color: #9c27b0;
+}
+
+/* 다크모드에서 부모 컨테이너 배경 */
+[data-theme="dark"] .container-fluid {
+    background-color: var(--bg-secondary, #2d2d2d);
+}
+
+/* 다크모드에서 텍스트 색상 */
+[data-theme="dark"] .text-muted {
+    color: var(--text-secondary, #b0b0b0) !important;
+}
+
+/* 반응형 (원래대로) */
 @media (max-width: 768px) {
     .sidebar {
         min-height: auto;
@@ -144,7 +375,7 @@
     }
 }
 
-/* 토스트 애니메이션 */
+/* 토스트 애니메이션 (원래대로) */
 .custom-toast {
     animation: slideInRight 0.3s ease-out;
 }
@@ -160,13 +391,81 @@
     }
 }
 
-/* 로딩 상태 */
+/* 로딩 상태 (원래대로) */
 .loading {
     opacity: 0.6;
     pointer-events: none;
 }
 
-/* 빈 상태 스타일 */
+/* 빈 상태 스타일 (원래대로) */
 .text-center i.fa-3x {
     opacity: 0.3;
+}
+
+/* 다크모드에서 흰색 배경들을 회색으로 변경 - 기존 코드 아래에 추가 */
+
+/* 메인 컨테이너와 카드 배경 강제 변경 */
+[data-theme="dark"] .container-fluid,
+[data-theme="dark"] .row,
+[data-theme="dark"] main {
+    background-color: #2d2d2d !important;
+}
+
+/* Bootstrap의 기본 배경색들 오버라이드 */
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-light,
+[data-theme="dark"] .card,
+[data-theme="dark"] .card-body {
+    background-color: #2d2d2d !important;
+    color: #ffffff !important;
+}
+
+/* 노트 카드 전체 배경 */
+[data-theme="dark"] .note-card {
+    background-color: #2d2d2d !important;
+    border-color: #404040 !important;
+}
+
+/* 사이드바 완전히 어둡게 */
+[data-theme="dark"] .sidebar {
+    background-color: #1a1a1a !important;
+}
+
+/* 모든 텍스트를 흰색으로 */
+/* 더 구체적인 텍스트 색상 설정 */
+[data-theme="dark"] .sidebar-heading,
+[data-theme="dark"] .note-card .card-subtitle,
+[data-theme="dark"] .note-content,
+[data-theme="dark"] .h2,
+[data-theme="dark"] .page-group-title {
+    color: #ffffff !important;
+}
+
+/* URL 링크는 파란색으로 보이게 */
+[data-theme="dark"] .page-link {
+    color: #4a9eff !important;
+}
+
+/* 일반 텍스트는 밝은 회색 */
+[data-theme="dark"] .note-card .highlighted-text,
+[data-theme="dark"] .note-card p {
+    color: #e0e0e0 !important;
+}
+
+/* 링크 색상만 파란색 유지 */
+[data-theme="dark"] a,
+[data-theme="dark"] .btn-outline-primary,
+[data-theme="dark"] .btn-outline-secondary {
+    color: #4a9eff !important;
+}
+
+/* 배지는 원래 색상 유지 */
+[data-theme="dark"] .highlight-badge {
+    color: inherit !important;
+}
+
+/* 날짜와 메타 정보는 회색으로 */
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] small {
+    color: #b0b0b0 !important;
 }
