@@ -1,53 +1,188 @@
-# Azure Pipelines configuration for Java (Gradle) project
-# Supports Windows agent, JDK 21, build & test, PR validation
+# Azure Pipelines CI/CD configuration for Java (Gradle) project
+# Supports build, test, and deployment to Azure App Service
 
 trigger:
   branches:
     include:
-      - appearance-note-feature
+      - dev
+      - prod
+      - appearance-note-feature  # 개발 중에는 유지
 
 pr:
   branches:
     include:
-      - appearance-note-feature
+      - dev
+      - prod
 
-pool:
-  vmImage: 'windows-latest'
+variables:
+  buildConfiguration: 'Release'
+  azureSubscription: 'your-azure-subscription'  # Azure service connection name
 
-steps:
-  # Step 1: JDK 21
-  - powershell: |
-      Write-Host "Using JDK 21"
-      Write-Host "##vso[task.setvariable variable=JAVA_HOME]$env:JAVA_HOME_21_X64"
-      $env:JAVA_HOME = $env:JAVA_HOME_21_X64
-      $env:Path = "$env:JAVA_HOME\bin;" + $env:Path
-      java -version
-    displayName: 'Select JDK 21 (preinstalled)'
+stages:
+  # ============================================
+  # STAGE 1: BUILD & TEST (CI)
+  # ============================================
+  - stage: Build
+    displayName: 'Build and Test'
+    jobs:
+      - job: BuildAndTest
+        displayName: 'Build and Test Job'
+        pool:
+          vmImage: 'windows-latest'
 
-  # Step 2: Gradle build (without test)
-  - script: gradlew.bat clean build -x test --no-daemon
-    displayName: 'Gradle clean build (without tests)'
+        steps:
+          # Step 1: Setup JDK 21
+          - powershell: |
+              Write-Host "Using JDK 21"
+              Write-Host "##vso[task.setvariable variable=JAVA_HOME]$env:JAVA_HOME_21_X64"
+              $env:JAVA_HOME = $env:JAVA_HOME_21_X64
+              $env:Path = "$env:JAVA_HOME\bin;" + $env:Path
+              java -version
+            displayName: 'Setup JDK 21'
 
-  # Step 3: Gradle test and collect results
-  - task: Gradle@2
-    displayName: 'Run unit tests and publish results'
-    inputs:
-      workingDirectory: ''
-      gradleWrapperFile: 'gradlew.bat'
-      tasks: 'test'
-      publishJUnitResults: true
-      testResultsFiles: '**/TEST-*.xml'
-      testRunTitle: 'Unit Tests - Betterpedia'
-      javaHomeOption: 'JDKVersion'
-      jdkVersionOption: '1.21'
+          # Step 2: Gradle build (without tests)
+          - script: gradlew.bat clean build -x test --no-daemon
+            displayName: 'Gradle clean build'
 
+          # Step 3: Run unit tests
+          - task: Gradle@2
+            displayName: 'Run unit tests'
+            inputs:
+              workingDirectory: ''
+              gradleWrapperFile: 'gradlew.bat'
+              tasks: 'test'
+              publishJUnitResults: true
+              testResultsFiles: '**/TEST-*.xml'
+              testRunTitle: 'Unit Tests - Betterpedia'
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '1.21'
 
+          # Step 4: Publish build artifacts
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathtoPublish: 'build/libs'
+              artifactName: 'betterpedia-app'
+              publishLocation: 'Container'
+            displayName: 'Publish JAR artifacts'
+            condition: succeededOrFailed()
 
-  # Step 4: upload build artifact
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: 'build/libs'
-      artifactName: 'drop'
-      publishLocation: 'Container'
-    displayName: 'Publish build artifacts'
-    condition: succeededOrFailed()
+  # ============================================
+  # STAGE 2: DEPLOY TO DEVELOPMENT (CD)
+  # ============================================
+  - stage: DeployDev
+    displayName: 'Deploy to Development'
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+    jobs:
+      - deployment: DeployToDevEnvironment
+        displayName: 'Deploy to Azure App Service (Dev)'
+        environment: 'development'
+        pool:
+          vmImage: 'windows-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                # Download artifacts from build stage
+                - download: current
+                  artifact: betterpedia-app
+                  displayName: 'Download JAR file'
+
+                # Deploy to Azure App Service
+                - task: AzureWebApp@1
+                  displayName: 'Deploy to Azure App Service (Dev)'
+                  inputs:
+                    azureSubscription: '$(azureSubscription)'
+                    appType: 'webApp'
+                    appName: 'betterpedia-dev'  # Your Azure App Service name
+                    package: '$(Pipeline.Workspace)/betterpedia-app/*.jar'
+                    deploymentMethod: 'auto'
+
+                # Health check after deployment
+                - powershell: |
+                    $url = "https://betterpedia-dev.azurewebsites.net/health"
+                    try {
+                      $response = Invoke-WebRequest -Uri $url -TimeoutSec 30
+                      if ($response.StatusCode -eq 200) {
+                        Write-Host "Development deployment successful! Health check passed."
+                      } else {
+                        Write-Host "Health check failed with status: $($response.StatusCode)"
+                        exit 1
+                      }
+                    } catch {
+                      Write-Host "Health check failed: $($_.Exception.Message)"
+                      exit 1
+                    }
+                  displayName: 'Health Check (Dev)'
+
+  # ============================================
+  # STAGE 3: DEPLOY TO PRODUCTION (CD)
+  # ============================================
+  - stage: DeployProd
+    displayName: 'Deploy to Production'
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/prod'))
+    jobs:
+      - deployment: DeployToProdEnvironment
+        displayName: 'Deploy to Azure App Service (Prod)'
+        environment: 'production'
+        pool:
+          vmImage: 'windows-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                # Download artifacts from build stage
+                - download: current
+                  artifact: betterpedia-app
+                  displayName: 'Download JAR file'
+
+                # Deploy to Azure App Service
+                - task: AzureWebApp@1
+                  displayName: 'Deploy to Azure App Service (Prod)'
+                  inputs:
+                    azureSubscription: '$(azureSubscription)'
+                    appType: 'webApp'
+                    appName: 'betterpedia-prod'  # Your Azure App Service name
+                    package: '$(Pipeline.Workspace)/betterpedia-app/*.jar'
+                    deploymentMethod: 'auto'
+
+                # Health check after deployment
+                - powershell: |
+                    $url = "https://betterpedia-prod.azurewebsites.net/health"
+                    try {
+                      $response = Invoke-WebRequest -Uri $url -TimeoutSec 30
+                      if ($response.StatusCode -eq 200) {
+                        Write-Host "Production deployment successful! Health check passed."
+                      } else {
+                        Write-Host "Health check failed with status: $($response.StatusCode)"
+                        exit 1
+                      }
+                    } catch {
+                      Write-Host "Health check failed: $($_.Exception.Message)"
+                      exit 1
+                    }
+                  displayName: 'Health Check (Prod)'
+
+  # ============================================
+  # STAGE 4: FEATURE BRANCH TESTING
+  # ============================================
+  - stage: FeatureBranchTest
+    displayName: 'Feature Branch Testing'
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/appearance-note-feature'))
+    jobs:
+      - job: TestFeatureBranch
+        displayName: 'Test Feature Branch'
+        pool:
+          vmImage: 'windows-latest'
+        steps:
+          - download: current
+            artifact: betterpedia-app
+            displayName: 'Download JAR file'
+
+          - powershell: |
+              Write-Host "Feature branch build completed successfully!"
+              Write-Host "Artifact available for manual testing"
+              Get-ChildItem "$(Pipeline.Workspace)/betterpedia-app" -Recurse
+            displayName: 'Feature Branch Validation'
