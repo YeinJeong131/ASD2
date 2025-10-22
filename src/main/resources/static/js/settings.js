@@ -218,6 +218,12 @@ document.addEventListener('DOMContentLoaded', async function() {
                 timeOffset: parseInt(timeOffsetSelect.value)
             };
 
+            // security - yein (add client verification)
+            if (!validateSettingsData(settings)) {
+                showStatus('Invalid settings data', 'error');
+                return;
+            }
+
             const response = await fetch('/api/settings', {
                 method: 'POST',
                 headers: {
@@ -228,6 +234,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             if (response.status === 401) {
                 window.location.href = '/login';
+                return;
+            }
+
+            // security - yein (processing Rate limiting)
+            if (response.status === 429) {
+                showStatus('Too many requests. Please wait a moment.', 'error');
                 return;
             }
 
@@ -292,3 +304,50 @@ document.addEventListener('DOMContentLoaded', async function() {
         statusMessage.style.display = 'none';
     }
 });
+
+// security - yein (add validation function)
+function validateSettingsData(data) {
+    // 기본 null 체크
+    if (!data || typeof data !== 'object') {
+        return false;
+    }
+
+    // 허용된 값들 체크
+    const validFontSizes = ['small', 'medium', 'large', 'extra-large'];
+    const validDateFormats = ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'];
+    const validPageWidths = ['fixed', 'wide'];
+    const validFontStyles = ['arial', 'serif', 'sans-serif', 'monospace'];
+    const validLineSpacings = ['compact', 'normal', 'relaxed'];
+
+    if (data.fontSize && !validFontSizes.includes(data.fontSize)) {
+        console.log('Invalid font size:', data.fontSize);
+        return false;
+    }
+
+    if (data.dateFormat && !validDateFormats.includes(data.dateFormat)) {
+        console.log('Invalid date format:', data.dateFormat);
+        return false;
+    }
+
+    if (data.pageWidth && !validPageWidths.includes(data.pageWidth)) {
+        console.log('Invalid page width:', data.pageWidth);
+        return false;
+    }
+
+    if (data.fontStyle && !validFontStyles.includes(data.fontStyle)) {
+        console.log('Invalid font style:', data.fontStyle);
+        return false;
+    }
+
+    if (data.lineSpacing && !validLineSpacings.includes(data.lineSpacing)) {
+        console.log('Invalid line spacing:', data.lineSpacing);
+        return false;
+    }
+
+    if (data.timeOffset && (data.timeOffset < -12 || data.timeOffset > 14)) {
+        console.log('Invalid time offset:', data.timeOffset);
+        return false;
+    }
+
+    return true;
+}

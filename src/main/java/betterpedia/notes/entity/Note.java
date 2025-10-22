@@ -16,13 +16,14 @@ public class Note {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false, length = 500)
+    // security - yein (limit column length)
+    @Column(nullable = false, length = 200) // 500 -> 200
     private String pageUrl;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "TEXT", length = 1000) // add length
     private String highlightedText;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", length = 2000) // add length
     private String noteContent;
 
     @Column(columnDefinition = "TEXT") // position data stored as JSON string
@@ -148,6 +149,19 @@ public class Note {
                 ", updatedDate=" + updatedDate +
                 ", highlightColour=" + highlightColour + '\'' +
                 '}';
+    }
+
+    // security - yein (add validation anotation)
+    @PrePersist
+    @PreUpdate
+    private void validateEntity() {
+        if (pageUrl != null && !pageUrl.startsWith("/wiki")) {
+            throw new IllegalArgumentException("Invalid page URL");
+        }
+
+        if (highlightedText != null && highlightedText.contains("<script")) {
+            throw new IllegalArgumentException("Invalid content detected");
+        }
     }
 
 }

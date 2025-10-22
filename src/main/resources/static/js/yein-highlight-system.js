@@ -33,7 +33,7 @@ class YeinHighlightSystem {
     init() {
         if (this.isInitialized) return;
 
-        console.log('Yein Highlight System 초기화 중...');
+        console.log('Yein Highlight System initialising...');
 
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this._initialize());
@@ -191,10 +191,10 @@ class YeinHighlightSystem {
 
         this.tooltip.innerHTML = `
             <button onclick="yeinHighlight.deleteHighlight('${highlightId}')" class="tooltip-btn delete">
-                🗑️ 삭제
+                🗑️ Delete
             </button>
             <button onclick="yeinHighlight.editNote('${highlightId}')" class="tooltip-btn edit">
-                ✏️ 노트 편집
+                ✏️ Edit Note
             </button>
         `;
 
@@ -251,7 +251,7 @@ class YeinHighlightSystem {
      */
     createHighlight(color = 'yellow') {
         if (!this.selectedRange || !this.selectedText) {
-            this.showMessage('텍스트를 먼저 선택해주세요.', 'warning');
+            this.showMessage('Please select text first.', 'warning');
             return;
         }
 
@@ -262,7 +262,7 @@ class YeinHighlightSystem {
             const span = document.createElement('span');
             span.className = `${this.config.cssPrefix} ${color}`;
             span.id = highlightId;
-            span.title = '클릭하여 편집';
+            span.title = 'Click to edit';
 
             // 클릭 이벤트 추가
             span.addEventListener('click', (e) => {
@@ -325,12 +325,19 @@ class YeinHighlightSystem {
      */
     addNote() {
         if (!this.selectedRange || !this.selectedText) {
-            this.showMessage('텍스트를 먼저 선택해주세요.', 'warning');
+            this.showMessage('Please select text first.', 'warning');
             return;
         }
 
-        const noteContent = prompt('노트를 입력하세요:', '');
+        const noteContent = prompt('Enter your note:', '');
         if (!noteContent) return;
+
+        // security - yein (input validation added)
+        const sanitizedNote = this.sanitizeNoteInput(noteContent);
+        if (!sanitizedNote) {
+            this.showMessage('Invalid note content', 'error');
+            return;
+        }
 
         this.createHighlightWithNote('yellow', noteContent);
     }
@@ -345,7 +352,7 @@ class YeinHighlightSystem {
             const span = document.createElement('span');
             span.className = `${this.config.cssPrefix} ${color} has-note`;
             span.id = highlightId;
-            span.title = `노트: ${noteContent.substring(0, 50)}${noteContent.length > 50 ? '...' : ''}`;
+            span.title = `Note: ${noteContent.substring(0, 50)}${noteContent.length > 50 ? '...' : ''}`;
 
             span.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -407,14 +414,25 @@ class YeinHighlightSystem {
 
                 console.log('Saved successfully:', savedNote.noteId);
 
-            } else {
+            }
+            // security - yein
+            else if (response.status === 401) {
+                // 보안 개선: 인증 실패 처리
+                this.showMessage('Please log in again', 'error');
+                window.location.href = '/login';
+            } else if (response.status === 429) {
+                // 보안 개선: Rate limiting 처리
+                this.showMessage('Too many requests. Please wait.', 'error');
+            }
+            // --
+            else {
                 console.error('Save failed:', response.status);
                 this.showMessage('failed to store in server.', 'error');
             }
 
         } catch (error) {
             console.error('Save error:', error);
-            this.showMessage('저장 중 오류가 발생했습니다.', 'error');
+            this.showMessage('Failed to save to server.', 'error');
         }
     }
 
@@ -422,7 +440,7 @@ class YeinHighlightSystem {
      * 하이라이트 삭제
      */
     deleteHighlight(highlightId) {
-        if (!confirm('do u want to delete this highlight?')) return;
+        if (!confirm('do you want to delete this highlight?')) return;
 
         const element = document.getElementById(highlightId);
         if (!element) return;
@@ -570,6 +588,49 @@ class YeinHighlightSystem {
             withNotes: this.highlights.filter(h => h.noteContent).length
         };
     }
+
+    // security - yein
+    // 보안 개선: 입력 검증 메서드 추가
+    sanitizeNoteInput(input) {
+        if (!input || typeof input !== 'string') {
+            return null;
+        }
+
+        // 길이 제한
+        if (input.length > 2000) {
+            this.showMessage('Note too long (max 2000 characters)', 'error');
+            return null;
+        }
+
+        // 기본적인 XSS 방지
+        const sanitized = input.replace(/[<>]/g, '')
+            .replace(/javascript:/gi, '')
+            .replace(/onload=/gi, '')
+            .replace(/onerror=/gi, '')
+            .trim();
+
+        if (sanitized.length === 0) {
+            this.showMessage('Note content cannot be empty', 'error');
+            return null;
+        }
+
+        return sanitized;
+    }
+
+    // 보안 개선: 선택된 텍스트 검증
+    validateSelectedText(text) {
+        if (!text || typeof text !== 'string') {
+            return false;
+        }
+
+        // 길이 제한
+        if (text.length > 1000) {
+            this.showMessage('Selected text too long (max 1000 characters)', 'error');
+            return false;
+        }
+
+        return true;
+    }
 }
 
 // ========================================
@@ -602,3 +663,5 @@ window.YeinHighlightSystem = {
     clearAll: () => yeinHighlight?.clearAllHighlights(),
     getStats: () => yeinHighlight?.getStats() || {}
 };
+
+

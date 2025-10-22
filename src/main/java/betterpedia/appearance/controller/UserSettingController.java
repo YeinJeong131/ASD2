@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import betterpedia.appearance.entity.UserSettings;
 import betterpedia.appearance.service.UserSettingService;
 
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 // for API
 @RestController // returns JSON data
@@ -17,6 +19,10 @@ public class UserSettingController {
 
     @Autowired
     private UserSettingService service;
+
+    // security - yein (add Map for Rate limiting)
+    private Map<Long, LocalDateTime> lastRequestTime = new ConcurrentHashMap<>();
+    private static final int REQUEST_COOLDOWN_SECONDS = 2; // 2 second cool down
 
 //    // GET /api/settings/{userId} - bring user's settings
 //    @GetMapping("/{userId}")
@@ -71,7 +77,15 @@ public class UserSettingController {
             return ResponseEntity.status(401).body("Not logged in");
         }
 
+        // security - yein (add Rate Limiting)
+        if (!isRequestAllowed(userId)) {
+            return ResponseEntity.status(429).body("Too many requests. Please wait.");
+        }
+
         try {
+            // security - yein (input validation)
+            validateUserSettingsInput(settings);
+
             UserSettings savedSettings = service.saveUserSettings(userId, settings);
             return ResponseEntity.ok(savedSettings);
         } catch (IllegalArgumentException e) {
@@ -82,6 +96,39 @@ public class UserSettingController {
         }
     }
 
+    // security - yein (checking Rate Limiting)
+    private boolean isRequestAllowed(Long userId) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime lastRequest = lastRequestTime.get(userId);
+
+        if (lastRequest == null || lastRequest.plusSeconds(REQUEST_COOLDOWN_SECONDS).isBefore(now)) {
+            lastRequestTime.put(userId, now);
+            return true;
+        }
+
+        return false;
+    }
+
+    // security - yein (additional validation method)
+    private void validateUserSettingsInput(UserSettings settings) {
+        // null 체크
+        if (settings == null) {
+            throw new IllegalArgumentException("Settings cannot be null");
+        }
+
+        // 문자열 길이 체크
+        if (settings.getFontSize() != null && settings.getFontSize().length() > 20) {
+            throw new IllegalArgumentException("Font size value too long");
+        }
+
+        if (settings.getDateFormat() != null && settings.getDateFormat().length() > 20) {
+            throw new IllegalArgumentException("Date format value too long");
+        }
+
+        if (settings.getPageWidth() != null && settings.getPageWidth().length() > 20) {
+            throw new IllegalArgumentException("Page width value too long");
+        }
+    }
 
     // bring logged in user info
     @GetMapping("/current-user")
