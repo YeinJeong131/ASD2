@@ -73,61 +73,57 @@ stages:
     dependsOn: Build
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
     jobs:
-      - deployment: SimulateDevDeployment
+      - job: SimulateDevDeployment
         displayName: 'Simulate Development Deployment'
-        environment: 'development'
         pool:
           vmImage: 'windows-latest'
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                # Download artifacts from build stage
-                - download: current
-                  artifact: betterpedia-app
-                  displayName: 'Download JAR file'
+        steps:
+          # Download artifacts from build stage
+          - download: current
+            artifact: betterpedia-app
+            displayName: 'Download JAR file'
 
-                # Simulate deployment validation
-                - powershell: |
-                    Write-Host "=== SIMULATED DEPLOYMENT TO DEVELOPMENT ==="
-                    Write-Host "Target Environment: Development"
-                    Write-Host "Deployment Method: Blue-Green Deployment"
-                    Write-Host "Application Health Check: Starting..."
-                    
-                    # Simulate deployment steps
-                    $jarFile = Get-ChildItem "$(Pipeline.Workspace)/betterpedia-app/*.jar" | Select-Object -First 1
-                    if ($jarFile) {
-                        Write-Host "JAR file found: $($jarFile.Name)"
-                        Write-Host "JAR size: $([math]::Round($jarFile.Length/1MB, 2)) MB"
-                        Write-Host "Deployment package validated"
-                    
-                        # Simulate configuration validation
-                        Write-Host "Environment variables validated"
-                        Write-Host "Database connection string verified"
-                        Write-Host "SSL certificates checked"
-                    
-                        # Simulate successful deployment
-                        Write-Host "Application deployed successfully"
-                        Write-Host "Health check endpoint responding"
-                        Write-Host "Application URL: https://betterpedia-dev.example.com"
-                        Write-Host "Deployment completed in 45 seconds"
-                    
-                    } else {
-                        Write-Host " JAR file not found"
-                        exit 1
-                    }
-                  displayName: 'Simulate Dev Deployment'
+          # Simulate deployment validation
+          - powershell: |
+              Write-Host "=== SIMULATED DEPLOYMENT TO DEVELOPMENT ==="
+              Write-Host "Target Environment: Development"
+              Write-Host "Deployment Method: Blue-Green Deployment"
+              Write-Host "Application Health Check: Starting..."
+              
+              # Simulate deployment steps
+              $jarFile = Get-ChildItem "$(Pipeline.Workspace)/betterpedia-app/*.jar" | Select-Object -First 1
+              if ($jarFile) {
+                  Write-Host "[SUCCESS] JAR file found: $($jarFile.Name)"
+                  Write-Host "[SUCCESS] JAR size: $([math]::Round($jarFile.Length/1MB, 2)) MB"
+                  Write-Host "[SUCCESS] Deployment package validated"
+              
+                  # Simulate configuration validation
+                  Write-Host "[SUCCESS] Environment variables validated"
+                  Write-Host "[SUCCESS] Database connection string verified"
+                  Write-Host "[SUCCESS] SSL certificates checked"
+              
+                  # Simulate successful deployment
+                  Write-Host "[SUCCESS] Application deployed successfully"
+                  Write-Host "[SUCCESS] Health check endpoint responding"
+                  Write-Host "[INFO] Application URL: https://betterpedia-dev.example.com"
+                  Write-Host "[INFO] Deployment completed in 45 seconds"
+              
+              } else {
+                  Write-Host "[ERROR] JAR file not found"
+                  exit 1
+              }
+            displayName: 'Simulate Dev Deployment'
 
-                # Simulate post-deployment testing
-                - powershell: |
-                    Write-Host "=== POST-DEPLOYMENT VALIDATION ==="
-                    Write-Host "Running smoke tests..."
-                    Write-Host "Login functionality verified"
-                    Write-Host "Appearance settings feature working"
-                    Write-Host "Highlight & notes feature working"
-                    Write-Host "Database connectivity confirmed"
-                    Write-Host "All acceptance criteria passed"
-                  displayName: 'Simulate Smoke Tests'
+          # Simulate post-deployment testing
+          - powershell: |
+              Write-Host "=== POST-DEPLOYMENT VALIDATION ==="
+              Write-Host "[INFO] Running smoke tests..."
+              Write-Host "[SUCCESS] Login functionality verified"
+              Write-Host "[SUCCESS] Appearance settings feature working"
+              Write-Host "[SUCCESS] Highlight & notes feature working"
+              Write-Host "[SUCCESS] Database connectivity confirmed"
+              Write-Host "[SUCCESS] All acceptance criteria passed"
+            displayName: 'Simulate Smoke Tests'
 
   # ============================================
   # STAGE 3: SIMULATED PROD DEPLOYMENT
@@ -137,58 +133,53 @@ stages:
     dependsOn: Build
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/prod'))
     jobs:
-      - deployment: SimulateProdDeployment
+      - job: SimulateProdDeployment
         displayName: 'Simulate Production Deployment'
-        environment: 'production'
         pool:
           vmImage: 'windows-latest'
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                # Download artifacts from build stage
-                - download: current
-                  artifact: betterpedia-app
-                  displayName: 'Download JAR file'
+        steps:
+          - download: current
+            artifact: betterpedia-app
+            displayName: 'Download JAR file'
 
-                # Simulate production deployment with extra checks
-                - powershell: |
-                    Write-Host "=== SIMULATED PRODUCTION DEPLOYMENT ==="
-                    Write-Host "Production deployment initiated"
-                    Write-Host "Security scan: PASSED"
-                    Write-Host "Compliance check: PASSED"
-                    Write-Host "⚡ Performance validation: PASSED"
-                    
-                    $jarFile = Get-ChildItem "$(Pipeline.Workspace)/betterpedia-app/*.jar" | Select-Object -First 1
-                    if ($jarFile) {
-                        Write-Host "Production-ready JAR validated: $($jarFile.Name)"
-                    
-                        # Simulate blue-green deployment
-                        Write-Host "Blue-Green deployment strategy"
-                        Write-Host "Green environment prepared"
-                        Write-Host "Application deployed to green environment"
-                        Write-Host "Health checks passed on green environment"
-                        Write-Host "Traffic routing: Blue → Green"
-                        Write-Host "Zero-downtime deployment completed"
-                    
-                        Write-Host "Production URL: https://betterpedia.example.com"
-                        Write-Host "Production deployment completed successfully"
-                    
-                    } else {
-                        Write-Host "Production JAR validation failed"
-                        exit 1
-                    }
-                  displayName: 'Simulate Production Deployment'
+          # Simulate production deployment with extra checks
+          - powershell: |
+              Write-Host "=== SIMULATED PRODUCTION DEPLOYMENT ==="
+              Write-Host "[INFO] Production deployment initiated"
+              Write-Host "[SUCCESS] Security scan: PASSED"
+              Write-Host "[SUCCESS] Compliance check: PASSED"
+              Write-Host "[SUCCESS] Performance validation: PASSED"
+              
+              $jarFile = Get-ChildItem "$(Pipeline.Workspace)/betterpedia-app/*.jar" | Select-Object -First 1
+              if ($jarFile) {
+                  Write-Host "[SUCCESS] Production-ready JAR validated: $($jarFile.Name)"
+              
+                  # Simulate blue-green deployment
+                  Write-Host "[INFO] Blue-Green deployment strategy"
+                  Write-Host "[SUCCESS] Green environment prepared"
+                  Write-Host "[SUCCESS] Application deployed to green environment"
+                  Write-Host "[SUCCESS] Health checks passed on green environment"
+                  Write-Host "[INFO] Traffic routing: Blue → Green"
+                  Write-Host "[SUCCESS] Zero-downtime deployment completed"
+              
+                  Write-Host "[INFO] Production URL: https://betterpedia.example.com"
+                  Write-Host "[SUCCESS] Production deployment completed successfully"
+              
+              } else {
+                  Write-Host "[ERROR] Production JAR validation failed"
+                  exit 1
+              }
+            displayName: 'Simulate Production Deployment'
 
-                # Simulate production monitoring setup
-                - powershell: |
-                    Write-Host "=== PRODUCTION MONITORING ==="
-                    Write-Host "Application performance monitoring: ACTIVE"
-                    Write-Host " Error tracking and alerting: CONFIGURED"
-                    Write-Host " Usage analytics: ENABLED"
-                    Write-Host " Log aggregation: SETUP COMPLETE"
-                    Write-Host " Production environment fully operational"
-                  displayName: 'Setup Production Monitoring'
+          # Simulate production monitoring setup
+          - powershell: |
+              Write-Host "=== PRODUCTION MONITORING ==="
+              Write-Host "[INFO] Application performance monitoring: ACTIVE"
+              Write-Host "[INFO] Error tracking and alerting: CONFIGURED"
+              Write-Host "[INFO] Usage analytics: ENABLED"
+              Write-Host "[INFO] Log aggregation: SETUP COMPLETE"
+              Write-Host "[SUCCESS] Production environment fully operational"
+            displayName: 'Setup Production Monitoring'
 
   # ============================================
   # STAGE 4: FEATURE BRANCH TESTING
@@ -209,16 +200,16 @@ stages:
 
           - powershell: |
               Write-Host "=== FEATURE BRANCH VALIDATION ==="
-              Write-Host " Feature branch testing completed"
-              Write-Host "Build artifact generated successfully"
-              Write-Host "Artifact ready for integration testing"
+              Write-Host "[INFO] Feature branch testing completed"
+              Write-Host "[SUCCESS] Build artifact generated successfully"
+              Write-Host "[INFO] Artifact ready for integration testing"
               
               $jarFile = Get-ChildItem "$(Pipeline.Workspace)/betterpedia-app/*.jar" | Select-Object -First 1
               if ($jarFile) {
-                  Write-Host "Artifact Details:"
+                  Write-Host "[INFO] Artifact Details:"
                   Write-Host "   Name: $($jarFile.Name)"
                   Write-Host "   Size: $([math]::Round($jarFile.Length/1MB, 2)) MB"
                   Write-Host "   Created: $($jarFile.CreationTime)"
-                  Write-Host "Feature branch ready for merge to dev"
+                  Write-Host "[SUCCESS] Feature branch ready for merge to dev"
               }
             displayName: 'Feature Branch Validation'
