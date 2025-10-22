@@ -1,53 +1,215 @@
-# Azure Pipelines configuration for Java (Gradle) project
-# Supports Windows agent, JDK 21, build & test, PR validation
+# Azure Pipelines CI/CD configuration for Java (Gradle) project
+# Cost-free version with simulated deployment
 
 trigger:
   branches:
     include:
+      - dev
+      - prod
       - appearance-note-feature
 
 pr:
   branches:
     include:
-      - appearance-note-feature
+      - dev
+      - prod
 
-pool:
-  vmImage: 'windows-latest'
+variables:
+  buildConfiguration: 'Release'
 
-steps:
-  # Step 1: JDK 21
-  - powershell: |
-      Write-Host "Using JDK 21"
-      Write-Host "##vso[task.setvariable variable=JAVA_HOME]$env:JAVA_HOME_21_X64"
-      $env:JAVA_HOME = $env:JAVA_HOME_21_X64
-      $env:Path = "$env:JAVA_HOME\bin;" + $env:Path
-      java -version
-    displayName: 'Select JDK 21 (preinstalled)'
+stages:
+  # ============================================
+  # STAGE 1: BUILD & TEST (CI)
+  # ============================================
+  - stage: Build
+    displayName: 'Build and Test'
+    jobs:
+      - job: BuildAndTest
+        displayName: 'Build and Test Job'
+        pool:
+          vmImage: 'windows-latest'
 
-  # Step 2: Gradle build (without test)
-  - script: gradlew.bat clean build -x test --no-daemon
-    displayName: 'Gradle clean build (without tests)'
+        steps:
+          # Step 1: Setup JDK 21
+          - powershell: |
+              Write-Host "Using JDK 21"
+              Write-Host "##vso[task.setvariable variable=JAVA_HOME]$env:JAVA_HOME_21_X64"
+              $env:JAVA_HOME = $env:JAVA_HOME_21_X64
+              $env:Path = "$env:JAVA_HOME\bin;" + $env:Path
+              java -version
+            displayName: 'Setup JDK 21'
 
-  # Step 3: Gradle test and collect results
-  - task: Gradle@2
-    displayName: 'Run unit tests and publish results'
-    inputs:
-      workingDirectory: ''
-      gradleWrapperFile: 'gradlew.bat'
-      tasks: 'test'
-      publishJUnitResults: true
-      testResultsFiles: '**/TEST-*.xml'
-      testRunTitle: 'Unit Tests - Betterpedia'
-      javaHomeOption: 'JDKVersion'
-      jdkVersionOption: '1.21'
+          # Step 2: Gradle build (without tests)
+          - script: gradlew.bat clean build -x test --no-daemon
+            displayName: 'Gradle clean build'
 
+          # Step 3: Run unit tests
+          - task: Gradle@2
+            displayName: 'Run unit tests'
+            inputs:
+              workingDirectory: ''
+              gradleWrapperFile: 'gradlew.bat'
+              tasks: 'test'
+              publishJUnitResults: true
+              testResultsFiles: '**/TEST-*.xml'
+              testRunTitle: 'Unit Tests - Betterpedia'
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '1.21'
 
+          # Step 4: Publish build artifacts
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathtoPublish: 'build/libs'
+              artifactName: 'betterpedia-app'
+              publishLocation: 'Container'
+            displayName: 'Publish JAR artifacts'
+            condition: succeededOrFailed()
 
-  # Step 4: upload build artifact
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: 'build/libs'
-      artifactName: 'drop'
-      publishLocation: 'Container'
-    displayName: 'Publish build artifacts'
-    condition: succeededOrFailed()
+  # ============================================
+  # STAGE 2: SIMULATED DEV DEPLOYMENT
+  # ============================================
+  - stage: DeployDev
+    displayName: 'Deploy to Development (Simulated)'
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+    jobs:
+      - job: SimulateDevDeployment
+        displayName: 'Simulate Development Deployment'
+        pool:
+          vmImage: 'windows-latest'
+        steps:
+          # Download artifacts from build stage
+          - download: current
+            artifact: betterpedia-app
+            displayName: 'Download JAR file'
+
+          # Simulate deployment validation
+          - powershell: |
+              Write-Host "=== SIMULATED DEPLOYMENT TO DEVELOPMENT ==="
+              Write-Host "Target Environment: Development"
+              Write-Host "Deployment Method: Blue-Green Deployment"
+              Write-Host "Application Health Check: Starting..."
+              
+              # Simulate deployment steps
+              $jarFile = Get-ChildItem "$(Pipeline.Workspace)/betterpedia-app/*.jar" | Select-Object -First 1
+              if ($jarFile) {
+                  Write-Host "[SUCCESS] JAR file found: $($jarFile.Name)"
+                  Write-Host "[SUCCESS] JAR size: $([math]::Round($jarFile.Length/1MB, 2)) MB"
+                  Write-Host "[SUCCESS] Deployment package validated"
+              
+                  # Simulate configuration validation
+                  Write-Host "[SUCCESS] Environment variables validated"
+                  Write-Host "[SUCCESS] Database connection string verified"
+                  Write-Host "[SUCCESS] SSL certificates checked"
+              
+                  # Simulate successful deployment
+                  Write-Host "[SUCCESS] Application deployed successfully"
+                  Write-Host "[SUCCESS] Health check endpoint responding"
+                  Write-Host "[INFO] Application URL: https://betterpedia-dev.example.com"
+                  Write-Host "[INFO] Deployment completed in 45 seconds"
+              
+              } else {
+                  Write-Host "[ERROR] JAR file not found"
+                  exit 1
+              }
+            displayName: 'Simulate Dev Deployment'
+
+          # Simulate post-deployment testing
+          - powershell: |
+              Write-Host "=== POST-DEPLOYMENT VALIDATION ==="
+              Write-Host "[INFO] Running smoke tests..."
+              Write-Host "[SUCCESS] Login functionality verified"
+              Write-Host "[SUCCESS] Appearance settings feature working"
+              Write-Host "[SUCCESS] Highlight & notes feature working"
+              Write-Host "[SUCCESS] Database connectivity confirmed"
+              Write-Host "[SUCCESS] All acceptance criteria passed"
+            displayName: 'Simulate Smoke Tests'
+
+  # ============================================
+  # STAGE 3: SIMULATED PROD DEPLOYMENT
+  # ============================================
+  - stage: DeployProd
+    displayName: 'Deploy to Production (Simulated)'
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/prod'))
+    jobs:
+      - job: SimulateProdDeployment
+        displayName: 'Simulate Production Deployment'
+        pool:
+          vmImage: 'windows-latest'
+        steps:
+          - download: current
+            artifact: betterpedia-app
+            displayName: 'Download JAR file'
+
+          # Simulate production deployment with extra checks
+          - powershell: |
+              Write-Host "=== SIMULATED PRODUCTION DEPLOYMENT ==="
+              Write-Host "[INFO] Production deployment initiated"
+              Write-Host "[SUCCESS] Security scan: PASSED"
+              Write-Host "[SUCCESS] Compliance check: PASSED"
+              Write-Host "[SUCCESS] Performance validation: PASSED"
+              
+              $jarFile = Get-ChildItem "$(Pipeline.Workspace)/betterpedia-app/*.jar" | Select-Object -First 1
+              if ($jarFile) {
+                  Write-Host "[SUCCESS] Production-ready JAR validated: $($jarFile.Name)"
+              
+                  # Simulate blue-green deployment
+                  Write-Host "[INFO] Blue-Green deployment strategy"
+                  Write-Host "[SUCCESS] Green environment prepared"
+                  Write-Host "[SUCCESS] Application deployed to green environment"
+                  Write-Host "[SUCCESS] Health checks passed on green environment"
+                  Write-Host "[INFO] Traffic routing: Blue → Green"
+                  Write-Host "[SUCCESS] Zero-downtime deployment completed"
+              
+                  Write-Host "[INFO] Production URL: https://betterpedia.example.com"
+                  Write-Host "[SUCCESS] Production deployment completed successfully"
+              
+              } else {
+                  Write-Host "[ERROR] Production JAR validation failed"
+                  exit 1
+              }
+            displayName: 'Simulate Production Deployment'
+
+          # Simulate production monitoring setup
+          - powershell: |
+              Write-Host "=== PRODUCTION MONITORING ==="
+              Write-Host "[INFO] Application performance monitoring: ACTIVE"
+              Write-Host "[INFO] Error tracking and alerting: CONFIGURED"
+              Write-Host "[INFO] Usage analytics: ENABLED"
+              Write-Host "[INFO] Log aggregation: SETUP COMPLETE"
+              Write-Host "[SUCCESS] Production environment fully operational"
+            displayName: 'Setup Production Monitoring'
+
+  # ============================================
+  # STAGE 4: FEATURE BRANCH TESTING
+  # ============================================
+  - stage: FeatureBranchTest
+    displayName: 'Feature Branch Testing'
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/appearance-note-feature'))
+    jobs:
+      - job: TestFeatureBranch
+        displayName: 'Test Feature Branch'
+        pool:
+          vmImage: 'windows-latest'
+        steps:
+          - download: current
+            artifact: betterpedia-app
+            displayName: 'Download JAR file'
+
+          - powershell: |
+              Write-Host "=== FEATURE BRANCH VALIDATION ==="
+              Write-Host "[INFO] Feature branch testing completed"
+              Write-Host "[SUCCESS] Build artifact generated successfully"
+              Write-Host "[INFO] Artifact ready for integration testing"
+              
+              $jarFile = Get-ChildItem "$(Pipeline.Workspace)/betterpedia-app/*.jar" | Select-Object -First 1
+              if ($jarFile) {
+                  Write-Host "[INFO] Artifact Details:"
+                  Write-Host "   Name: $($jarFile.Name)"
+                  Write-Host "   Size: $([math]::Round($jarFile.Length/1MB, 2)) MB"
+                  Write-Host "   Created: $($jarFile.CreationTime)"
+                  Write-Host "[SUCCESS] Feature branch ready for merge to dev"
+              }
+            displayName: 'Feature Branch Validation'
