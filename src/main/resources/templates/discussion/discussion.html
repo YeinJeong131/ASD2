@@ -24,7 +24,14 @@
         <header class="discussion-header">
             <h1>Article Discussion</h1>
             <div class="header-info">
-                <span class="article-id">Article #<span th:text="${articleId}">1</span></span>
+                <span class="article-id">
+                    Article #<span th:text="${articleId}">1</span>
+                    <!-- Link back to article (when article feature is ready) -->
+                    <a th:href="@{/wiki/article/{id}(id=${articleId})}" 
+                       style="margin-left: 10px; color: #3498db; text-decoration: none; font-size: 14px;">
+                        📖 View Article
+                    </a>
+                </span>
                 <span class="comment-count"><span id="totalComments" th:text="${commentCount}">0</span> Comments</span>
                 <span class="user-info" th:if="${isLoggedIn}">
                     Logged in as: <strong th:text="${userEmail}">user@example.com</strong>
