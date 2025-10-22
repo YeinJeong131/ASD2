@@ -18,37 +18,28 @@ export function textToVoice(
     function setState(state) {
         const speaking = state === 'speaking';
         const paused   = state === 'paused';
-
-        if (p) p.disabled = !speaking;          //pause only while speaking
-        if (r) r.disabled = !paused;            //resume only while paused
-        if (s) s.disabled = !(speaking || paused); //stop while speaking/paused
-
+        if (p) p.disabled = !speaking;
+        if (r) r.disabled = !paused;
+        if (s) s.disabled = !(speaking || paused);
         if (btn) btn.disabled = speaking || paused;
     }
 
     function pickVoice() {
         const vs = speechSynthesis.getVoices() || [];
-        return (
-            vs.find(v => v.lang && v.lang.toLowerCase() === 'en-us') ||
-            vs.find(v => v.lang && v.lang.toLowerCase().startsWith('en-')) ||
-            null
+        return (vs.find(v => v.lang && v.lang.toLowerCase() === 'en-us') ||
+            vs.find(v => v.lang && v.lang.toLowerCase().startsWith('en-')) || null
         );
     }
 
     function speak(text) {
         const t = (text ?? '').trim() || defaultText;
-
-        // If already talking or queued, cancel and start fresh
         if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
-
         const utter = new SpeechSynthesisUtterance(t);
         currentUtterance = utter;
-
         const voice = pickVoice();
         if (voice) { utter.voice = voice; utter.lang = voice.lang; }
         else { utter.lang = 'en-us'; }
 
-        // lock rate & pitch to 1
         utter.rate = 1;
         utter.pitch = 1;
         utter.volume = volume;
@@ -67,13 +58,11 @@ export function textToVoice(
         utter.onresume = () => setState('speaking');
         utter.onend    = reset;
         utter.onerror  = reset;
-
         speechSynthesis.speak(utter);
     }
 
     const primeVoices = () => speechSynthesis.getVoices();
     speechSynthesis.addEventListener?.('voiceschanged', primeVoices);
-
     primeVoices();
 
     btn?.addEventListener('click', () => speak(input ? input.value : btn?.dataset?.text));
@@ -100,6 +89,5 @@ export function textToVoice(
     });
 
     setState('idle');
-
     return { speak };
 }

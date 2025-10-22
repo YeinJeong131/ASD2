@@ -3,7 +3,6 @@ const pick = document.getElementById('pick');
 const det = document.getElementById('det');
 const voiceBtn = document.getElementById('voice');
 voiceBtn.disabled = true;
-
 let articles = [];
 
 async function loadArticleTitles() {
@@ -26,19 +25,16 @@ async function loadArticleTitles() {
 
 function showArticleByID(id){
     const a = articles.find(x => String(x.id) === String(id));
-    if (!a) { det.innerHTML = ''; voiceBtn.disabled = true; return; }   // NEW
+    if (!a) { det.innerHTML = ''; voiceBtn.disabled = true; return; }
 
-    det.innerHTML = `
-    <h2>${a.title}</h2>
-    <p><em>by ${a.author}</em></p>
+    det.innerHTML =`<h2>${a.title}</h2> <p><em>by ${a.author}</em></p>
     <p>${(a.body).replace(/\n/g,'<br>')}</p>
-    <p>published: ${a.publishDate}</p>
-  `;
+    <p>published: ${a.publishDate}</p>`;
 
     const body = (a.body).replace(/\s+/g,' ').trim();
     voiceBtn.dataset.text = body;
     voiceBtn.disabled = !body;
-    document.getElementById('readingTime').textContent = readingTime(body);  // <-- add this
+    document.getElementById('readingTime').textContent = readingTime(body);
 }
 
 pick.addEventListener('change', () => showArticleByID(pick.value));
