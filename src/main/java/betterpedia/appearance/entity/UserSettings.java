@@ -3,7 +3,6 @@ package betterpedia.appearance.entity;
 import jakarta.persistence.*;
 import betterpedia.user.entity.User;
 
-
 @Entity
 @Table(name = "user_settings")
 public class UserSettings {
@@ -16,7 +15,7 @@ public class UserSettings {
     private User user;
 
     @Column(name = "dark_mode")
-    private boolean darkMode = false;
+    private Boolean darkMode = false;  // boolean → Boolean 변경
 
     @Column(name = "font_size")
     private String fontSize = "medium";
@@ -42,17 +41,16 @@ public class UserSettings {
         this.user = user;
     }
 
-
     // Getters and Setters
-
     public Long getId() {
         return id;
     }
+
     public User getUser() {
         return user;
     }
 
-    public Boolean getDarkMode() {
+    public Boolean getDarkMode() {  // Boolean 타입 유지
         return darkMode;
     }
 
@@ -80,7 +78,6 @@ public class UserSettings {
         return lineSpacing;
     }
 
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -89,7 +86,7 @@ public class UserSettings {
         this.user = user;
     }
 
-    public void setDarkMode(boolean darkMode) {
+    public void setDarkMode(Boolean darkMode) {  // boolean → Boolean 변경
         this.darkMode = darkMode;
     }
 

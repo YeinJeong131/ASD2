@@ -134,6 +134,7 @@ public class Note {
     // helper method to update timestamp
     @PreUpdate
     public void updateTimestamp() {
+        validateEntityLogic();
         this.updatedDate = LocalDateTime.now();
     }
 
@@ -153,12 +154,24 @@ public class Note {
 
     // security - yein (add validation anotation)
     @PrePersist
-    @PreUpdate
-    private void validateEntity() {
+    private void onCreate() {
+        validateEntityLogic();
+        if (createdDate == null) {
+            this.createdDate = LocalDateTime.now();
+        }
+        if (updatedDate == null) {
+            this.updatedDate = this.createdDate;
+        }
+        if (highlightColour == null || highlightColour.isBlank()) {
+            this.highlightColour = "yellow";
+        }
+    }
+
+    // 3) 공통 검증 로직(애노테이션 제거)
+    private void validateEntityLogic() {
         if (pageUrl != null && !pageUrl.startsWith("/wiki")) {
             throw new IllegalArgumentException("Invalid page URL");
         }
-
         if (highlightedText != null && highlightedText.contains("<script")) {
             throw new IllegalArgumentException("Invalid content detected");
         }
