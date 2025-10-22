@@ -134,7 +134,7 @@ public class UserSettingController {
     @GetMapping("/current-user")
     public ResponseEntity<?> getCurrentUser(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
-        String email = (String) session.getAttribute("email");
+        String email = (String) session.getAttribute("userEmail");
 
         if (userId == null) {
             return ResponseEntity.status(401).body("Not logged in");

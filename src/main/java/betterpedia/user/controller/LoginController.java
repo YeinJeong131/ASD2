@@ -23,7 +23,7 @@ public class LoginController {
         // If already logged in, skip login page
         Long userId = (Long) session.getAttribute("userId");
         if (userId != null) {
-            return "redirect:/account";
+            return "redirect:/wiki";
         }
         return "login";
     }
