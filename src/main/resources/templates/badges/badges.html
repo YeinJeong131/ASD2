@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contributor Badges - Betterpedia</title>
+    <link rel="stylesheet" th:href="@{/css/badges.css}">
+    <link rel="stylesheet" th:href="@{/css/theme-variables.css}">
+</head>
+<body>
+    <!-- Navigation Bar (matching existing style) -->
+    <nav class="navbar" style="background: #2c3e50; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 0;">
+        <a th:href="@{/wiki}" style="color: white; font-size: 24px; font-weight: bold; text-decoration: none;">📚 Betterpedia</a>
+        <div style="display: flex; gap: 20px;">
+            <a th:href="@{/wiki}" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">🏠 Wiki Home</a>
+            <a th:href="@{/discussion/1}" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">💬 Discussion</a>
+            <a th:href="@{/badges}" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; background: rgba(255,255,255,0.15);">🏆 Badges</a>
+            <a th:href="@{/my-notes}" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">📝 My Notes</a>
+            <a th:href="@{/settings}" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">⚙️ Settings</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <header class="badges-header">
+            <h1>Contributor Badges</h1>
+            <p class="subtitle">Recognising our top contributors</p>
+        </header>
+
+        <!-- My Badge Section -->
+        <div class="my-badge-section" th:if="${isLoggedIn}">
+            <h2>My Badge</h2>
+            <div id="myBadgeCard" class="badge-card loading">
+                <p>Loading your badge...</p>
+            </div>
+        </div>
+
+        <div class="login-prompt" th:unless="${isLoggedIn}">
+            <p>Please <a href="/login">log in</a> to view your badge.</p>
+        </div>
+
+        <!-- Badge Statistics -->
+        <div class="badge-stats">
+            <h2>Badge Distribution</h2>
+            <div class="stats-grid">
+                <div class="stat-card bronze">
+                    <div class="stat-icon">🥉</div>
+                    <h3>Bronze</h3>
+                    <p class="stat-count" th:text="${badgeStats.bronzeCount}">0</p>
+                    <p class="stat-label">Contributors</p>
+                </div>
+                <div class="stat-card silver">
+                    <div class="stat-icon">🥈</div>
+                    <h3>Silver</h3>
+                    <p class="stat-count" th:text="${badgeStats.silverCount}">0</p>
+                    <p class="stat-label">Contributors</p>
+                </div>
+                <div class="stat-card gold">
+                    <div class="stat-icon">🥇</div>
+                    <h3>Gold</h3>
+                    <p class="stat-count" th:text="${badgeStats.goldCount}">0</p>
+                    <p class="stat-label">Contributors</p>
+                </div>
+                <div class="stat-card platinum">
+                    <div class="stat-icon">💎</div>
+                    <h3>Platinum</h3>
+                    <p class="stat-count" th:text="${badgeStats.platinumCount}">0</p>
+                    <p class="stat-label">Contributors</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Badge Information -->
+        <div class="badge-info">
+            <h2>How to Earn Badges</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="badge-level bronze">🥉 Bronze</div>
+                    <p>Starting level for all contributors</p>
+                    <p class="requirement">0-19 contributions</p>
+                </div>
+                <div class="info-card">
+                    <div class="badge-level silver">🥈 Silver</div>
+                    <p>Active contributor</p>
+                    <p class="requirement">20-49 contributions</p>
+                </div>
+                <div class="info-card">
+                    <div class="badge-level gold">🥇 Gold</div>
+                    <p>Dedicated contributor</p>
+                    <p class="requirement">50-99 contributions</p>
+                </div>
+                <div class="info-card">
+                    <div class="badge-level platinum">💎 Platinum</div>
+                    <p>Elite contributor</p>
+                    <p class="requirement">100+ contributions</p>
+                </div>
+            </div>
+            <p class="contribution-note">
+                Contributions include: creating articles, editing content, posting comments, and more!
+            </p>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="leaderboard">
+            <h2>Top Contributors</h2>
+            <div id="leaderboardList" class="leaderboard-list">
+                <p class="loading">Loading leaderboard...</p>
+            </div>
+        </div>
+
+        <!-- Admin Section -->
+        <div class="admin-section" th:if="${isAdmin}">
+            <h2>Admin Controls</h2>
+            <div class="admin-controls">
+                <form id="adminBadgeForm" class="admin-form">
+                    <h3>Manage User Badge</h3>
+                    <div class="form-group">
+                        <label for="targetUserId">User ID:</label>
+                        <input type="number" id="targetUserId" name="targetUserId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="badgeLevel">Badge Level:</label>
+                        <select id="badgeLevel" name="level">
+                            <option value="BRONZE">Bronze</option>
+                            <option value="SILVER">Silver</option>
+                            <option value="GOLD">Gold</option>
+                            <option value="PLATINUM">Platinum</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="contributionCount">Contribution Count:</label>
+                        <input type="number" id="contributionCount" name="count" min="0">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Update Badge</button>
+                        <button type="button" id="deleteBadgeBtn" class="btn-danger">Delete Badge</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const USER_ID = /*[[${userId}]]*/ null;
+        const IS_ADMIN = /*[[${isAdmin}]]*/ false;
+        const IS_LOGGED_IN = /*[[${isLoggedIn}]]*/ false;
+        /*]]>*/
+    </script>
+    <script th:src="@{/js/badges.js}"></script>
+</body>
+</html>
+
