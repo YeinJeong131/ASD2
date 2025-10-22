@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussion - Betterpedia</title>
+    <link rel="stylesheet" th:href="@{/css/discussion.css}">
+    <link rel="stylesheet" th:href="@{/css/theme-variables.css}">
+</head>
+<body>
+    <!-- Navigation Bar (matching existing style) -->
+    <nav class="navbar" style="background: #2c3e50; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 0;">
+        <a th:href="@{/wiki}" style="color: white; font-size: 24px; font-weight: bold; text-decoration: none;">📚 Betterpedia</a>
+        <div style="display: flex; gap: 20px;">
+            <a th:href="@{/wiki}" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">🏠 Wiki Home</a>
+            <a th:href="@{/discussion/1}" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; background: rgba(255,255,255,0.15);">💬 Discussion</a>
+            <a th:href="@{/badges}" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">🏆 Badges</a>
+            <a th:href="@{/my-notes}" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">📝 My Notes</a>
+            <a th:href="@{/settings}" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">⚙️ Settings</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <header class="discussion-header">
+            <h1>Article Discussion</h1>
+            <div class="header-info">
+                <span class="article-id">Article #<span th:text="${articleId}">1</span></span>
+                <span class="comment-count"><span id="totalComments" th:text="${commentCount}">0</span> Comments</span>
+                <span class="user-info" th:if="${isLoggedIn}">
+                    Logged in as: <strong th:text="${userEmail}">user@example.com</strong>
+                    <span class="admin-badge" th:if="${isAdmin}">ADMIN</span>
+                </span>
+            </div>
+        </header>
+
+        <!-- Comment Form -->
+        <div class="comment-form-section" th:if="${isLoggedIn}">
+            <h2>Add a Comment</h2>
+            <form id="commentForm">
+                <input type="hidden" id="articleId" name="articleId" th:value="${articleId}">
+                <textarea 
+                    id="commentContent" 
+                    name="content" 
+                    placeholder="Share your thoughts..." 
+                    required 
+                    minlength="1" 
+                    maxlength="2000"
+                    rows="4"></textarea>
+                <div class="form-actions">
+                    <span class="char-count">0 / 2000</span>
+                    <button type="submit" class="btn-primary">Post Comment</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="login-prompt" th:unless="${isLoggedIn}">
+            <p>Please <a href="/login">log in</a> to post comments.</p>
+        </div>
+
+        <!-- Comments List -->
+        <div class="comments-section">
+            <h2>Comments</h2>
+            <div id="commentsList" class="comments-list">
+                <p class="loading">Loading comments...</p>
+            </div>
+            <div id="noComments" class="no-comments" style="display: none;">
+                <p>No comments yet. Be the first to comment!</p>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const ARTICLE_ID = /*[[${articleId}]]*/ 1;
+        const USER_ID = /*[[${userId}]]*/ null;
+        const IS_ADMIN = /*[[${isAdmin}]]*/ false;
+        const IS_LOGGED_IN = /*[[${isLoggedIn}]]*/ false;
+        /*]]>*/
+    </script>
+    <script th:src="@{/js/discussion.js}"></script>
+</body>
+</html>
+
