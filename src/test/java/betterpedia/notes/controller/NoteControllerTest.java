@@ -4,6 +4,7 @@ import betterpedia.notes.entity.Note;
 import betterpedia.notes.service.NoteService;
 import betterpedia.user.entity.User;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,6 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(NoteController.class)
+@DisplayName("Note Controller Tests")
 class NoteControllerTest {
 
     @Autowired
@@ -41,6 +43,7 @@ class NoteControllerTest {
     }
 
     @Test
+    @DisplayName("POST /api/notes - Create note successfully")
     void testCreateNote_Success() throws Exception {
         // Given
         Long userId = 1L;
@@ -48,12 +51,12 @@ class NoteControllerTest {
         MockHttpSession session = createSession(userId);
 
         String pageUrl = "/wiki/Java";
-        String highlightedText = "Java is...";
-        String noteContent = "Important!";
+        String highlightedText = "Java is a programming language";
+        String noteContent = "Important concept to remember!";
 
         Note note = new Note(user, pageUrl, highlightedText, noteContent, null);
 
-        when(noteService.saveNote(eq(1L), eq(pageUrl), eq(highlightedText), eq(noteContent), isNull(), isNull()))
+        when(noteService.saveNote(eq(userId), eq(pageUrl), eq(highlightedText), eq(noteContent), isNull(), anyString()))
                 .thenReturn(note);
 
         // When & Then
@@ -62,20 +65,37 @@ class NoteControllerTest {
                         .param("pageUrl", pageUrl)
                         .param("highlightedText", highlightedText)
                         .param("noteContent", noteContent))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.pageUrl").value(pageUrl))
+                .andExpect(jsonPath("$.highlightedText").value(highlightedText))
+                .andExpect(jsonPath("$.noteContent").value(noteContent));
 
-        verify(noteService, times(1)).saveNote(eq(1L), eq(pageUrl), eq(highlightedText), eq(noteContent), isNull(), isNull());
+        verify(noteService, times(1)).saveNote(eq(userId), eq(pageUrl), eq(highlightedText), eq(noteContent), isNull(), anyString());
     }
 
     @Test
+    @DisplayName("POST /api/notes - Unauthorized when not logged in")
+    void testCreateNote_NotLoggedIn() throws Exception {
+        // When & Then
+        mockMvc.perform(post("/api/notes")
+                        .param("pageUrl", "/wiki/Java")
+                        .param("highlightedText", "text")
+                        .param("noteContent", "content"))
+                .andExpect(status().isUnauthorized());
+
+        verify(noteService, never()).saveNote(anyLong(), anyString(), anyString(), anyString(), any(), anyString());
+    }
+
+    @Test
+    @DisplayName("GET /api/notes - Get all notes for logged in user")
     void testGetAllNotes_Success() throws Exception {
         // Given
         Long userId = 1L;
         User user = createTestUser(userId);
         MockHttpSession session = createSession(userId);
 
-        Note note1 = new Note(user, "/wiki/Java", "Text1", "Content1", null);
-        Note note2 = new Note(user, "/wiki/Spring", "Text2", "Content2", null);
+        Note note1 = new Note(user, "/wiki/Java", "Java text", "Java note", null);
+        Note note2 = new Note(user, "/wiki/Spring", "Spring text", "Spring note", null);
 
         List<Note> notes = Arrays.asList(note1, note2);
         when(noteService.getAllNotesByUser(userId)).thenReturn(notes);
@@ -86,9 +106,22 @@ class NoteControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2));
+
+        verify(noteService, times(1)).getAllNotesByUser(userId);
     }
 
     @Test
+    @DisplayName("GET /api/notes - Unauthorized when not logged in")
+    void testGetAllNotes_NotLoggedIn() throws Exception {
+        // When & Then
+        mockMvc.perform(get("/api/notes"))
+                .andExpect(status().isUnauthorized());
+
+        verify(noteService, never()).getAllNotesByUser(anyLong());
+    }
+
+    @Test
+    @DisplayName("GET /api/notes/page - Get notes by page URL")
     void testGetNotesByPage_Success() throws Exception {
         // Given
         Long userId = 1L;
@@ -96,9 +129,9 @@ class NoteControllerTest {
         MockHttpSession session = createSession(userId);
 
         String pageUrl = "/wiki/Java";
-        Note note = new Note(user, pageUrl, "Text", "Content", null);
+        Note note = new Note(user, pageUrl, "Java programming", "Important notes", null);
 
-        when(noteService.getNotesByUserAndPage(anyLong(), eq(pageUrl)))
+        when(noteService.getNotesByUserAndPage(userId, pageUrl))
                 .thenReturn(Collections.singletonList(note));
 
         // When & Then
@@ -106,10 +139,15 @@ class NoteControllerTest {
                         .session(session)
                         .param("url", pageUrl))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].pageUrl").value(pageUrl));
+
+        verify(noteService, times(1)).getNotesByUserAndPage(userId, pageUrl);
     }
 
     @Test
+    @DisplayName("PUT /api/notes/{noteId} - Update note successfully")
     void testUpdateNote_Success() throws Exception {
         // Given
         Long userId = 1L;
@@ -117,11 +155,11 @@ class NoteControllerTest {
         MockHttpSession session = createSession(userId);
 
         Long noteId = 1L;
-        String newContent = "Updated content";
-        Note updatedNote = new Note(user, "/wiki/Java", "Text", newContent, null);
+        String newContent = "Updated note content";
+        Note updatedNote = new Note(user, "/wiki/Java", "Java text", newContent, null);
         updatedNote.setNoteId(noteId);
 
-        when(noteService.updateNote(eq(1L), eq(noteId), eq(newContent), isNull()))
+        when(noteService.updateNote(eq(userId), eq(noteId), eq(newContent), isNull()))
                 .thenReturn(updatedNote);
 
         // When & Then
@@ -129,12 +167,29 @@ class NoteControllerTest {
                         .session(session)
                         .param("noteContent", newContent))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.noteId").value(noteId))
                 .andExpect(jsonPath("$.noteContent").value(newContent));
 
-        verify(noteService, times(1)).updateNote(eq(1L), eq(noteId), eq(newContent), isNull());
+        verify(noteService, times(1)).updateNote(eq(userId), eq(noteId), eq(newContent), isNull());
     }
 
     @Test
+    @DisplayName("PUT /api/notes/{noteId} - Unauthorized when not logged in")
+    void testUpdateNote_NotLoggedIn() throws Exception {
+        // Given
+        Long noteId = 1L;
+        String newContent = "Updated content";
+
+        // When & Then
+        mockMvc.perform(put("/api/notes/{noteId}", noteId)
+                        .param("noteContent", newContent))
+                .andExpect(status().isUnauthorized());
+
+        verify(noteService, never()).updateNote(anyLong(), anyLong(), anyString(), any());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/notes/{noteId} - Delete note successfully")
     void testDeleteNote_Success() throws Exception {
         // Given
         Long userId = 1L;
@@ -153,6 +208,7 @@ class NoteControllerTest {
     }
 
     @Test
+    @DisplayName("DELETE /api/notes/{noteId} - Note not found returns 404")
     void testDeleteNote_NotFound() throws Exception {
         // Given
         Long userId = 1L;
@@ -165,15 +221,72 @@ class NoteControllerTest {
         mockMvc.perform(delete("/api/notes/{noteId}", noteId)
                         .session(session))
                 .andExpect(status().isNotFound());
+
+        verify(noteService, times(1)).deleteNote(noteId, userId);
     }
 
     @Test
-    void testCreateNote_NotLoggedIn() throws Exception {
+    @DisplayName("DELETE /api/notes/{noteId} - Unauthorized when not logged in")
+    void testDeleteNote_NotLoggedIn() throws Exception {
+        // Given
+        Long noteId = 1L;
+
+        // When & Then
+        mockMvc.perform(delete("/api/notes/{noteId}", noteId))
+                .andExpect(status().isUnauthorized());
+
+        verify(noteService, never()).deleteNote(anyLong(), anyLong());
+    }
+
+    @Test
+    @DisplayName("POST /api/notes - Create note with highlight color")
+    void testCreateNote_WithHighlightColor() throws Exception {
+        // Given
+        Long userId = 1L;
+        User user = createTestUser(userId);
+        MockHttpSession session = createSession(userId);
+
+        String pageUrl = "/wiki/Spring";
+        String highlightedText = "Spring Framework";
+        String noteContent = "Important framework";
+        String highlightColor = "yellow";
+
+        Note note = new Note(user, pageUrl, highlightedText, noteContent, null);
+
+        when(noteService.saveNote(eq(userId), eq(pageUrl), eq(highlightedText), eq(noteContent), isNull(), eq(highlightColor)))
+                .thenReturn(note);
+
         // When & Then
         mockMvc.perform(post("/api/notes")
-                        .param("pageUrl", "/wiki/Java")
-                        .param("highlightedText", "text")
-                        .param("noteContent", "content"))
-                .andExpect(status().isUnauthorized());
+                        .session(session)
+                        .param("pageUrl", pageUrl)
+                        .param("highlightedText", highlightedText)
+                        .param("noteContent", noteContent)
+                        .param("highlightColor", highlightColor))
+                .andExpect(status().isOk());
+
+        verify(noteService, times(1)).saveNote(eq(userId), eq(pageUrl), eq(highlightedText), eq(noteContent), isNull(), eq(highlightColor));
+    }
+
+    @Test
+    @DisplayName("GET /api/notes/page - Empty result when no notes found")
+    void testGetNotesByPage_EmptyResult() throws Exception {
+        // Given
+        Long userId = 1L;
+        MockHttpSession session = createSession(userId);
+        String pageUrl = "/wiki/NonExistent";
+
+        when(noteService.getNotesByUserAndPage(userId, pageUrl))
+                .thenReturn(Collections.emptyList());
+
+        // When & Then
+        mockMvc.perform(get("/api/notes/page")
+                        .session(session)
+                        .param("url", pageUrl))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(0));
+
+        verify(noteService, times(1)).getNotesByUserAndPage(userId, pageUrl);
     }
 }
