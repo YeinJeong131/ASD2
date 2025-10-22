@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BetterPedia</title>
+</head>
+<body>
+
+<h1>Articles</h1>
+<label for="pick">choose an article:</label>
+<select id="pick">
+    <option value="">select</option>
+</select>
+
+<div id="det"></div>
+
+<script type="module" src="ArticlePicker.js"></script>
+
+<button id="voice">Text to voice</button>
+<button id="pause">Pause</button>
+<button id="resume">Resume</button>
+<button id="stop">Stop</button>
+
+<script type="module">
+    import { textToVoice } from './toVoice.js';
+    textToVoice({
+        b: '#voice',
+        i: null,
+        pauseBtn: '#pause',
+        resumeBtn: '#resume',
+        stopBtn: '#stop',
+        volume: 1
+    });
+</script>
+
+<hr>
+<button id="button_download_as_txt">Download as a simple .txt file</button>
+<br/>
+<button id="button_download_as_pdf">Download as a pdf file</button>
+<script src="DownloadManagement.js"></script>
+
+<hr>
+<div id="filters">
+    <strong>filters</strong>
+    <div>
+        <label>author <input id="fAuthor" placeholder="e.g. davey"></label>
+        <label>body <input id="fBody"   placeholder="keyword in body"></label>
+        <label>date  <input id="fDate"   type="date"></label>
+        <button id="apply">apply</button>
+        <button id="clear" type="button">clear</button>
+
+    </div>
+    <div id="matchInfo"></div>
+</div>
+
+<br/>
+<hr>
+
+<p id="body">calculated average reading time: <span id="readingTime"></span></p>
+
+<script>
+    /*
+    * according to this webiste: https://wordstotime.com/
+    * average reading is 130 words per minute
+    * so I use that formula to convert the article to how much it will take the user to read it
+    */
+    function readingTime(text, wpm = 130) {
+        if (!text) return '0 min';
+        const words = text.trim().length;
+        const minutes = Math.ceil(words / wpm);
+        return `${minutes} min`;
+    }
+
+    const bodyText = document.getElementById('body').textContent;
+    document.getElementById('readingTime').textContent = readingTime(bodyText);
+</script>
+
+</body>
+</html>
