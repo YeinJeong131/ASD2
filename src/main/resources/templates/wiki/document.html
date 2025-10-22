@@ -318,8 +318,46 @@
                 query generation from method names, simplifying data access layer development.
             </p>
         </div>
+
+        <!-- Discussion Section - Link to Yu-Han's Discussion Feature -->
+        <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #e0e0e0;">
+            <h2 style="color: #2c3e50; margin-bottom: 20px;">💬 Join the Discussion</h2>
+            <p style="color: #7f8c8d; margin-bottom: 20px;">
+                Share your thoughts, ask questions, or discuss this article with the community.
+            </p>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <a th:href="@{/discussion/{id}(id=${document.id})}" 
+                   style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; 
+                          background: #3498db; color: white; text-decoration: none; border-radius: 8px; 
+                          font-weight: 600; font-size: 16px; transition: background 0.3s;"
+                   onmouseover="this.style.background='#2980b9'" 
+                   onmouseout="this.style.background='#3498db'">
+                    💬 Join Discussion
+                </a>
+                <span style="color: #7f8c8d; font-size: 14px;">
+                    <span id="discussionCommentCount">0</span> comments
+                </span>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Fetch comment count for this article -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const articleId = /*[[${document.id}]]*/ 1;
+    
+    // Fetch and display comment count
+    fetch('/api/comments/article/' + articleId + '/count')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('discussionCommentCount').textContent = data.count;
+        })
+        .catch(error => {
+            console.log('Could not fetch comment count:', error);
+        });
+    /*]]>*/
+</script>
 
 <script th:src="@{/js/apply-settings.js}"></script>
 <!--highlight system JavaScript -->
