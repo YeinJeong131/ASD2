@@ -18,72 +18,50 @@ public class LoginController {
     @Autowired
     private UserRepository userRepository;
 
-    // GET /login - 로그인 페이지 표시
     @GetMapping("/login")
-    public String loginPage(Model model, HttpSession session) {
-        // 이미 로그인되어 있으면 wiki로 리다이렉트
-        if (session.getAttribute("userId") != null) {
-            return "redirect:/wiki";
+    public String loginPage(HttpSession session) {
+        // If already logged in, skip login page
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId != null) {
+            return "redirect:/account";
         }
-
-        model.addAttribute("pageTitle", "Login");
         return "login";
     }
 
-    // POST /login - 로그인 처리
     @PostMapping("/login")
-    public String login(@RequestParam String username,  // email 또는 username
-                        @RequestParam String password,
-                        @RequestParam(required = false) boolean remember,
-                        HttpSession session,
-                        Model model) {
+    public String doLogin(
+            @RequestParam("username") String email,
+            @RequestParam("password") String password,
+            HttpSession session,
+            Model model
+    ) {
+        Optional<User> found = userRepository.findByEmail(email);
 
-        // 이메일로 사용자 찾기
-        Optional<User> userOpt = userRepository.findByEmail(username);
+        if (found.isPresent()) {
+            User u = found.get();
+            // Plain-text password check for now (hash later if needed)
+            if (Boolean.TRUE.equals(u.isEnabled()) && password.equals(u.getPassword())) {
+                session.setAttribute("userId", u.getId());
+                session.setAttribute("userEmail", u.getEmail());
 
-        if (userOpt.isEmpty()) {
-            model.addAttribute("error", "Invalid email or password");
-            return "login";
+                boolean isAdmin = u.getRoles() != null
+                        && u.getRoles().stream().anyMatch(r -> "ADMIN".equalsIgnoreCase(r.getName()));
+
+                return isAdmin ? "redirect:/admin" : "redirect:/account";
+            }
         }
 
-        User user = userOpt.get();
-
-        // 비밀번호 확인 (나중에 BCrypt로 변경)
-        if (!user.getPassword().equals(password)) {
-            model.addAttribute("error", "Invalid email or password");
-            return "login";
-        }
-
-        // 계정 활성화 확인
-        if (!user.isEnabled()) {
-            model.addAttribute("error", "Your account has been disabled");
-            return "login";
-        }
-
-        // 로그인 성공 - 세션에 저장
-        session.setAttribute("userId", user.getId());
-        session.setAttribute("email", user.getEmail());
-
-        // Remember me 처리 (선택사항)
-        if (remember) {
-            session.setMaxInactiveInterval(30 * 24 * 60 * 60); // 30일
-        } else {
-            session.setMaxInactiveInterval(2 * 60 * 60); // 2시간
-        }
-
-        // 로그인 후 wiki 홈으로 리다이렉트
-        return "redirect:/wiki";
+        model.addAttribute("error", "Invalid email or password");
+        return "login";
     }
 
-    // GET /logout - 로그아웃
     @GetMapping("/logout")
     public String logout(HttpSession session, Model model) {
-        session.invalidate(); // 세션 삭제
+        session.invalidate();
         model.addAttribute("msg", "You have been signed out");
         return "redirect:/login";
     }
 
-    // POST /logout (form에서 POST 사용하는 경우)
     @PostMapping("/logout")
     public String logoutPost(HttpSession session, Model model) {
         session.invalidate();
