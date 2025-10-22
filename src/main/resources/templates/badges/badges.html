@@ -8,6 +8,18 @@
     <link rel="stylesheet" th:href="@{/css/theme-variables.css}">
 </head>
 <body>
+    <!-- Navigation Bar (matching existing style) -->
+    <nav class="navbar" style="background: #2c3e50; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 0;">
+        <a th:href="@{/wiki}" style="color: white; font-size: 24px; font-weight: bold; text-decoration: none;">📚 Betterpedia</a>
+        <div style="display: flex; gap: 20px;">
+            <a th:href="@{/wiki}" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">🏠 Wiki Home</a>
+            <a th:href="@{/discussion/1}" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">💬 Discussion</a>
+            <a th:href="@{/badges}" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; background: rgba(255,255,255,0.15);">🏆 Badges</a>
+            <a th:href="@{/my-notes}" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">📝 My Notes</a>
+            <a th:href="@{/settings}" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">⚙️ Settings</a>
+        </div>
+    </nav>
+    
     <div class="container">
         <header class="badges-header">
             <h1>Contributor Badges</h1>
