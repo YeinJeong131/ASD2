@@ -1,5 +1,6 @@
 package betterpedia.nimaFeatures.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -14,7 +15,9 @@ public class Article{
     @Column(columnDefinition = "longtext") private String body;
     private String author;
     private String tags;
-    @Column(name = "publish_date") private LocalDate publish_date;
+    @JsonProperty("publishDate")
+    @Column(name = "publish_date")
+    private LocalDate publish_date;
 
     public Long getId(){return id;}
     public void setId(Long id){this.id = id;}

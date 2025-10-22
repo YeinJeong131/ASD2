@@ -33,9 +33,17 @@ public class ArticleController {
         return articleRepository.findById(id).orElseThrow();
     }
 
-    @GetMapping("/search/author")
-    public List<String> searchByAuthor(@RequestParam("authorName") String authorName) {
-        if (authorName == null || authorName.isEmpty()) return List.of();
-        return articleRepository.findTitleByAuth(authorName);
+    @GetMapping("/search")
+    public List<String> search(
+            @RequestParam(required = false) String authorName,
+            @RequestParam(required = false) String body,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
+            java.time.LocalDate date
+    ) {
+        // normalize blanks to null so the JPQL ignores them
+        authorName = (authorName == null || authorName.isBlank()) ? null : authorName.trim();
+        body       = (body       == null || body.isBlank())       ? null : body.trim();
+        // date is already null if not provided
+        return articleRepository.searchTitles(authorName, body, date);
     }
 }

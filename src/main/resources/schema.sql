@@ -1,5 +1,4 @@
 use wiki;
-
 create table if not exists article (
                                        id bigint auto_increment primary key,
                                        title varchar(255) not null,
