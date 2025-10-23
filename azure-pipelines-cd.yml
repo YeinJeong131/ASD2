@@ -10,8 +10,8 @@ trigger:
 
 variables:
   buildConfiguration: 'Release'
-  azureSubscription: 'YOUR_AZURE_SUBSCRIPTION'
-  webAppName: 'betterpedia-app'
+  azureSubscription: 'azure-betterpedia-connection'  # Name from Step 4
+  webAppName: 'betterpedia-app'  # Your App Service name from Step 3
   
 stages:
 - stage: Build
