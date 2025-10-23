@@ -454,23 +454,5 @@ git push origin feature/your-feature
 
 ---
 
-## 📝 License
-
-University project - Not for commercial use
-
----
-
-## 📞 Support
-
-**For Issues:**
-- Check this README first
-- Review project documentation
-- Contact team lead
-
-**Team Lead:** TBD
-**Tutor:** TBD
-
----
-
 **Built by the Betterpedia Team**
 
