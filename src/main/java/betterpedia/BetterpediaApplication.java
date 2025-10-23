@@ -15,5 +15,6 @@ public class BetterpediaApplication {
 // Testing Link
 // http://localhost:8080
 // http://localhost:8080/wiki/spring-framework
+// http://localhost:8080/badges
 // http://localhost:8080/discussion/1
 // http://localhost:8080/discussion/2
