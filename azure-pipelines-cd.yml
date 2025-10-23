@@ -1,0 +1,98 @@
+# Azure DevOps Pipeline for Continuous Deployment
+# Betterpedia Project - Release 2
+# Features: F103 (Discussion) & F104 (Badges) by Yu-Han Chang
+
+trigger:
+  branches:
+    include:
+      - main
+      - prod
+
+variables:
+  buildConfiguration: 'Release'
+  azureSubscription: 'YOUR_AZURE_SUBSCRIPTION'
+  webAppName: 'betterpedia-app'
+  
+stages:
+- stage: Build
+  displayName: 'Build Stage'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build and Test'
+    pool:
+      vmImage: 'ubuntu-latest'
+    
+    steps:
+    - task: JavaToolInstaller@0
+      displayName: 'Install Java 21'
+      inputs:
+        versionSpec: '21'
+        jdkArchitectureOption: 'x64'
+        jdkSourceOption: 'PreInstalled'
+    
+    - task: Gradle@3
+      displayName: 'Run Gradle Build'
+      inputs:
+        gradleWrapperFile: 'gradlew'
+        tasks: 'clean build'
+        publishJUnitResults: true
+        testResultsFiles: '**/build/test-results/test/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        gradleOptions: '-Xmx3072m'
+        sonarQubeRunAnalysis: false
+    
+    - task: Gradle@3
+      displayName: 'Run Unit Tests'
+      inputs:
+        gradleWrapperFile: 'gradlew'
+        tasks: 'test'
+        publishJUnitResults: true
+        testResultsFiles: '**/build/test-results/test/TEST-*.xml'
+        testRunTitle: 'Unit Tests - Discussion & Badges Features'
+    
+    - task: CopyFiles@2
+      displayName: 'Copy Build Artifacts'
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)/build/libs'
+        Contents: '*.jar'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifacts'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+
+- stage: Deploy
+  displayName: 'Deploy to Azure'
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/prod'))
+  jobs:
+  - deployment: DeployWeb
+    displayName: 'Deploy to Azure App Service'
+    environment: 'production'
+    pool:
+      vmImage: 'ubuntu-latest'
+    
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadBuildArtifacts@1
+            displayName: 'Download Build Artifacts'
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'drop'
+              downloadPath: '$(System.ArtifactsDirectory)'
+          
+          - task: AzureWebApp@1
+            displayName: 'Deploy to Azure Web App'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: 'webAppLinux'
+              appName: '$(webAppName)'
+              package: '$(System.ArtifactsDirectory)/drop/*.jar'
+              runtimeStack: 'JAVA|21-java21'
+
