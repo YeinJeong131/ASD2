@@ -590,19 +590,19 @@ class YeinHighlightSystem {
     }
 
     // security - yein
-    // 보안 개선: 입력 검증 메서드 추가
+    //  security improvement - add input validation method
     sanitizeNoteInput(input) {
         if (!input || typeof input !== 'string') {
             return null;
         }
 
-        // 길이 제한
+        // limiting length
         if (input.length > 2000) {
             this.showMessage('Note too long (max 2000 characters)', 'error');
             return null;
         }
 
-        // 기본적인 XSS 방지
+        // preventing XSS
         const sanitized = input.replace(/[<>]/g, '')
             .replace(/javascript:/gi, '')
             .replace(/onload=/gi, '')
