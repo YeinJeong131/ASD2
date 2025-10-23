@@ -61,18 +61,8 @@
 <p id="body">calculated average reading time: <span id="readingTime"></span></p>
 
 <script type="module">
-    /*
-    * according to this webiste: https://wordstotime.com/
-    * average reading is 130 words per minute
-    * so I use that formula to convert the article to how much it will take the user to read it
-    */
-    function readingTime(text, wpm = 130) {
-        const words = (text || '').trim().split(/\s+/).filter(Boolean).length;
-        const minutes = Math.ceil(words / wpm);
-        return `${minutes} min`;
-    }
     const bodyText = (document.getElementById('body') || document.body).innerText;
-    document.getElementById('readingTime').textContent = readingTime(bodyText);
+    document.getElementById('readingTime').textContent = readingTime_2(bodyText);
 </script>
 
 </body>

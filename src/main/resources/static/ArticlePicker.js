@@ -5,6 +5,17 @@ const voiceBtn = document.getElementById('voice');
 voiceBtn.disabled = true;
 let articles = [];
 
+/*
+* according to this webiste: https://wordstotime.com/
+* average reading is 130 words per minute
+* so I use that formula to convert the article to how much it will take the user to read it
+*/
+function readingTime_2(text, wpm = 130) {
+    const words = (text || '').trim().split(/\s+/).filter(Boolean).length;
+    const minutes = Math.ceil(words / wpm);
+    return `${minutes} min`;
+}
+
 async function loadArticleTitles() {
     try {
         const response = await fetch(url);
@@ -34,7 +45,7 @@ function showArticleByID(id){
     const body = (a.body).replace(/\s+/g,' ').trim();
     voiceBtn.dataset.text = body;
     voiceBtn.disabled = !body;
-    document.getElementById('readingTime').textContent = readingTime(body);
+    document.getElementById('readingTime').textContent = readingTime_2(body);
 }
 
 pick.addEventListener('change', () => showArticleByID(pick.value));
