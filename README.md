@@ -21,10 +21,10 @@ Betterpedia is a knowledge-sharing platform that extends traditional wiki functi
 
 | Member | Student ID | Features | Code Location |
 |--------|-----------|----------|---------------|
-| **Yu-Han Chang** | YOUR_ID | F103 (Discussion), F104 (Badges) | `betterpedia/discussion/`, `betterpedia/badge/` |
-| **Yein** | ID | F109 (Appearance), F110 (Highlight & Notes) | `betterpedia/appearance/`, `betterpedia/notes/` |
-| **Esha** | ID | F101 (User Management), F102 (Popular Page) | `betterpedia/user/` |
-| **Nima** | ID | F105-F108 (Search, Download, Reading Time, TTS) | TBD |
+| **Yu-Han** | 14542423 | F103 (Discussion), F104 (Badges) | `betterpedia/discussion/`, `betterpedia/badge/` |
+| **Yein** | 14650170 | F109 (Appearance), F110 (Highlight & Notes) | `betterpedia/appearance/`, `betterpedia/notes/` |
+| **Esha** | 24461093 | F101 (User Management), F102 (Popular Page) | `betterpedia/user/` |
+| **Nima** | 14503407 | F105-F108 (Search, Download, Reading Time, TTS) | `betterpedia/nimaFeature` |
 
 ---
 
