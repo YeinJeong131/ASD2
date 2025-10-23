@@ -32,7 +32,7 @@ Betterpedia is a knowledge-sharing platform that extends traditional wiki functi
 
 **Tech Stack:**
 - **Backend:** Java 21, Spring Boot 3.5.4
-- **Database:** MySQL 8.0 (or H2 for testing)
+- **Database:** MySQL 8.0
 - **Frontend:** Thymeleaf, HTML5, CSS3, JavaScript
 - **Build:** Gradle 8.14.3
 - **CI/CD:** Azure DevOps Pipeline
